@@ -1,0 +1,23 @@
+{
+  "name": "personas",
+  "version": "25.4.30",
+  "license": "MIT",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@nuxtjs/tailwindcss": "6.12.1",
+    "@pinia/nuxt": "0.5.4",
+    "numeral": "2.0.6",
+    "nuxt": "3.12.4",
+    "pinia": "2.2.2"
+  },
+  "packageManager": "pnpm@9.15.4",
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
