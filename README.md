@@ -1,5 +1,12 @@
 # Personas: Live Your Digital Cash Life
 
+## 🎉 Quick Links
+- **🚀 LIVE DEMO**: [personas.cash](https://personas.cash)
+- **📖 PROJECT TOUR**: [tour.personas.cash](https://tour.personas.cash)
+- **📚 DOCUMENTATION**: [docs.personas.cash](https://docs.personas.cash)
+- **💻 GITHUB**: [github.com/shomariimani/personas](https://github.com/shomariimani/personas)
+- **🐦 TWITTER**: [@0xShomari](https://twitter.com/0xShomari)
+
 ## 🤖 Your AI-Powered Financial Companion
 
 Personas are revolutionary AI-powered autonomous agents that transform Bitcoin Cash from complex technology into an intelligent financial partner that grows with your digital lifestyle. Experience cryptocurrency that feels like magic, not math.
@@ -172,11 +179,12 @@ We believe in building the future together. Contributions are welcome! Please se
 
 ## 📞 Connect With Us
 
-- **Website**: [personas.cash](https://personas.cash)
-- **Documentation**: [docs.personas.cash](https://docs.personas.cash)
-- **GitHub**: [github.com/shomariimani/personas](https://github.com/shomariimani/personas)
-- **Twitter**: [@0xShomari](https://twitter.com/0xShomari)
-- **DoraHacks**: [View our BUIDL](https://dorahacks.io/buidl/32734)
+- **🌐 Website**: [personas.cash](https://personas.cash)
+- **📖 Documentation**: [docs.personas.cash](https://docs.personas.cash)
+- **🎬 Project Tour**: [tour.personas.cash](https://tour.personas.cash)
+- **💻 GitHub**: [github.com/shomariimani/personas](https://github.com/shomariimani/personas)
+- **🐦 Twitter**: [@0xShomari](https://twitter.com/0xShomari)
+- **🏆 DoraHacks**: [View our BUIDL](https://dorahacks.io/buidl/32734)
 
 ## 📄 License
 
