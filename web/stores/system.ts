@@ -4,7 +4,8 @@
 import { defineStore } from 'pinia'
 
 /* Initialize constants. */
-const UPDATE_TICKER_INTERVAL = 30000 // 30 seconds
+// NOTE: Ticker updates are disabled for now
+// const UPDATE_TICKER_INTERVAL = 30000 // 30 seconds
 
 /**
  * System Store
@@ -73,20 +74,20 @@ export const useSystemStore = defineStore('system', {
     }),
 
     getters: {
-        nex() {
-            if (!this._tickers?.NEXA) {
+        bch() {
+            if (!this._tickers?.BCH) {
                 return null
             }
 
-            return this._tickers.NEXA.quote.USD.price
+            return this._tickers.BCH.quote.USD.price
         },
 
         usd() {
-            if (!this.nex) {
+            if (!this.bch) {
                 return null
             }
 
-            return this.nex * 10**6
+            return this.bch * 10**6
         },
 
         locale() {
@@ -129,11 +130,12 @@ export const useSystemStore = defineStore('system', {
                 this._tickers = {}
             }
 
-            /* Initialize ticker interval. */
-            setInterval(this.updateTicker, UPDATE_TICKER_INTERVAL)
+            /* NOTE: Ticker updates are disabled for now */
+            // /* Initialize ticker interval. */
+            // setInterval(this.updateTicker, UPDATE_TICKER_INTERVAL)
 
-            /* Update ticker. */
-            this.updateTicker()
+            // /* Update ticker. */
+            // this.updateTicker()
 
             if (this._locale === null) {
                 /* Set (library) locale from (store) locale. */
@@ -147,13 +149,23 @@ export const useSystemStore = defineStore('system', {
         },
 
         async updateTicker () {
-            if (!this._tickers.NEXA) {
-                this._tickers.NEXA = {}
+            if (!this._tickers.BCH) {
+                this._tickers.BCH = {}
             }
 
             try {
-                this._tickers.NEXA = await $fetch('https://nexa.exchange/ticker')
-                console.log('Ticker updated successfully:', this._tickers.NEXA)
+                // TODO: Replace with actual BCH price API endpoint
+                // this._tickers.BCH = await $fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin-cash&vs_currencies=usd')
+
+                // Mock BCH price for now
+                this._tickers.BCH = {
+                    quote: {
+                        USD: {
+                            price: 265.42
+                        }
+                    }
+                }
+                console.log('Ticker updated successfully:', this._tickers.BCH)
             } catch (error) {
                 console.error('Failed to update ticker:', error)
                 this.setError('Failed to fetch market data')
