@@ -25,6 +25,7 @@ const sidebars = {
                 'advanced/security'
             ],
         },
+        'faq',
     ],
 }
 
