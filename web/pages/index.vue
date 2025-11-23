@@ -1,6 +1,4 @@
-<script setup lang="ts">
-//
-</script>
+<!-- pages/index.vue -->
 
 <template>
     <main>
@@ -171,3 +169,7 @@
         <FAQ />
     </main>
 </template>
+
+<script setup lang="ts">
+//
+</script>

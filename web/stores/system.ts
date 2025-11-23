@@ -1,8 +1,7 @@
+// stores/system.ts
+
 /* Import modules. */
 import { defineStore } from 'pinia'
-
-/* Import clipboard manager. */
-import './system/clipboard.ts'
 
 /* Initialize constants. */
 const UPDATE_TICKER_INTERVAL = 30000 // 30 seconds
@@ -62,6 +61,15 @@ export const useSystemStore = defineStore('system', {
          * Support for multiple exchange tickers across multiple currencies.
          */
         _tickers: null,
+
+        /* Track app starts */
+        _appStarts: 0,
+
+        /* System states */
+        isLoading: false,
+        error: null as string | null,
+        success: null as string | null,
+        isInitialized: false
     }),
 
     getters: {
@@ -88,6 +96,18 @@ export const useSystemStore = defineStore('system', {
 
             return this._locale
         },
+
+        tickers() {
+            return this._tickers || {}
+        },
+
+        flags() {
+            return this._flags || {}
+        },
+
+        notices() {
+            return this._notices || {}
+        }
     },
 
     actions: {
@@ -97,6 +117,10 @@ export const useSystemStore = defineStore('system', {
          * Performs startup activities.
          */
         init() {
+            if (this.isInitialized) {
+                return
+            }
+
             this._appStarts++
 
             /* Validate tickers. */
@@ -117,11 +141,9 @@ export const useSystemStore = defineStore('system', {
                 console.log(`User's preferred language is:`, this.locale)
             }
 
-            /* Initialize (library) locale. */
-            // const { locale } = useI18n()
+            this.isInitialized = true
 
-            /* Set (library) locale. */
-            // locale.value = this.locale
+            console.log('System store initialized successfully')
         },
 
         async updateTicker () {
@@ -129,7 +151,79 @@ export const useSystemStore = defineStore('system', {
                 this._tickers.NEXA = {}
             }
 
-            this._tickers.NEXA = await $fetch('https://nexa.exchange/ticker')
+            try {
+                this._tickers.NEXA = await $fetch('https://nexa.exchange/ticker')
+                console.log('Ticker updated successfully:', this._tickers.NEXA)
+            } catch (error) {
+                console.error('Failed to update ticker:', error)
+                this.setError('Failed to fetch market data')
+            }
         },
+
+        setLoading(loading: boolean) {
+            this.isLoading = loading
+        },
+
+        setError(error: string | null) {
+            this.error = error
+            if (error) {
+                console.error('System error:', error)
+            }
+        },
+
+        setSuccess(success: string | null) {
+            this.success = success
+        },
+
+        clearMessages() {
+            this.error = null
+            this.success = null
+        },
+
+        setFlag(flag: string, value: boolean) {
+            if (!this._flags) {
+                this._flags = {}
+            }
+            this._flags[flag] = value
+        },
+
+        getFlag(flag: string): boolean {
+            return this._flags?.[flag] || false
+        },
+
+        setNotice(noticeCode: string, dismissed: boolean) {
+            if (!this._notices) {
+                this._notices = {}
+            }
+            this._notices[noticeCode] = dismissed
+        },
+
+        isNoticeDismissed(noticeCode: string): boolean {
+            return this._notices?.[noticeCode] || false
+        },
+
+        showNotification(notification: { icon?: string, title: string, description?: string, delay?: number }) {
+            this.notif = {
+                isShowing: true,
+                icon: notification.icon || null,
+                title: notification.title,
+                description: notification.description || null,
+                delay: notification.delay || 7000
+            }
+
+            // Auto-hide notification after delay
+            if (this.notif.delay > 0) {
+                setTimeout(() => {
+                    this.hideNotification()
+                }, this.notif.delay)
+            }
+        },
+
+        hideNotification() {
+            this.notif.isShowing = false
+            this.notif.icon = null
+            this.notif.title = null
+            this.notif.description = null
+        }
     },
 })

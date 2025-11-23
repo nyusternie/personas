@@ -1,26 +1,3 @@
-<script setup lang="ts">
-useHead({
-    title: `Help — Personas`,
-    meta: [
-        { name: 'description', content: `Personas makes building your next BIG idea effortless.` }
-    ],
-})
-
-/* Initialize stores. */
-import { useSystemStore } from '@/stores/system'
-const System = useSystemStore()
-
-// onMounted(() => {
-//     console.log('Mounted!')
-//     // Now it's safe to perform setup operations.
-// })
-
-// onBeforeUnmount(() => {
-//     console.log('Before Unmount!')
-//     // Now is the time to perform all cleanup operations.
-// })
-</script>
-
 <template>
     <main class="bg-white">
         <div class="mx-auto max-w-7xl px-6 py-0 sm:pt-8 lg:px-8 lg:py-20">
@@ -87,3 +64,26 @@ const System = useSystemStore()
 
     <Footer />
 </template>
+
+<script setup lang="ts">
+useHead({
+    title: `Help — Personas`,
+    meta: [
+        { name: 'description', content: `Personas makes building your next BIG idea effortless.` }
+    ],
+})
+
+/* Initialize stores. */
+import { useSystemStore } from '@/stores/system'
+const System = useSystemStore()
+
+// onMounted(() => {
+//     console.log('Mounted!')
+//     // Now it's safe to perform setup operations.
+// })
+
+// onBeforeUnmount(() => {
+//     console.log('Before Unmount!')
+//     // Now is the time to perform all cleanup operations.
+// })
+</script>
