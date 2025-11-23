@@ -1,48 +1,44 @@
 <!-- components/Footer.vue -->
 
 <script setup lang="ts">
-/* Social links */
-const socialLinks = [
-    {
-        name: 'GitHub',
-        href: 'https://github.com/nyusternie',
-        icon: 'github',
-        description: 'View our code and contribute'
-    },
-    {
-        name: 'Twitter',
-        href: 'https://x.com/0xShomari',
-        icon: 'twitter',
-        description: 'Follow us for updates'
-    },
-]
+    /* Social links */
+    const socialLinks = [
+        {
+            name: 'GitHub',
+            href: 'https://github.com/nyusternie',
+            description: 'View our code and contribute'
+        },
+        {
+            name: 'Twitter',
+            href: 'https://x.com/0xShomari',
+            description: 'Follow us for updates'
+        },
+    ]
 
-/* Navigation sections */
-const navigation = {
-    product: [
-        { name: 'AI Assistant', href: '#ai-assistant' },
-        { name: 'Wallet Features', href: '#features' },
-        { name: 'Gasless Transactions', href: '#gasless' },
-        { name: 'Security', href: '#security' },
-    ],
-    developers: [
-        { name: 'Documentation', href: '#docs' },
-        { name: 'API Reference', href: '#api' },
-        { name: 'GitHub', href: 'https://github.com/nyusternie' },
-        { name: 'Examples', href: '#examples' },
-    ],
-    company: [
-        { name: 'About', href: '#about' },
-        { name: 'Blog', href: '#blog' },
-        { name: 'Team', href: '#team' },
-        { name: 'Contact', href: '#contact' },
-    ],
-    legal: [
-        { name: 'Privacy', href: '#privacy' },
-        { name: 'Terms', href: '#terms' },
-        { name: 'Cookie Policy', href: '#cookies' },
-    ],
-}
+    /* Navigation sections */
+    const navigation = {
+        product: [
+            { name: 'AI Assistant', href: '#ai-assistant' },
+            { name: 'Gasless Transactions', href: '#gasless' },
+            { name: 'Wallet Features', href: '#features' },
+            { name: 'Security', href: '#security' },
+        ],
+        developers: [
+            { name: 'Documentation', href: '#docs' },
+            { name: 'GitHub', href: 'https://github.com/nyusternie' },
+            { name: 'WalletConnect', href: '#walletconnect' },
+            { name: 'API Reference', href: '#api' },
+        ],
+        company: [
+            { name: 'About', href: '#about' },
+            { name: 'Team', href: '#team' },
+            { name: 'Contact', href: '#contact' },
+        ],
+        legal: [
+            { name: 'Privacy', href: '#privacy' },
+            { name: 'Terms', href: '#terms' },
+        ],
+    }
 </script>
 
 <template>
@@ -53,7 +49,7 @@ const navigation = {
                 <!-- Brand Section -->
                 <div class="space-y-8">
                     <div class="flex items-center space-x-3">
-                        <img class="h-10 w-auto" src="~/assets/icon.png" alt="Personas" />
+                        <img class="h-10 w-auto" src="/icon.png" alt="Personas" />
                         <span class="text-2xl font-bold text-white">Personas</span>
                     </div>
 
@@ -73,7 +69,7 @@ const navigation = {
                             :title="item.description"
                         >
                             <span class="sr-only">{{ item.name }}</span>
-                            <Icon :name="item.icon" class="h-6 w-6" />
+                            {{ item.name }}
                         </a>
                     </div>
                 </div>
@@ -155,13 +151,13 @@ const navigation = {
                     <div class="mt-4 md:mt-0">
                         <p class="text-xs leading-5 text-gray-500">
                             Powered by
-                            <NuxtLink
-                                to="https://modenero.com"
+                            <a
+                                href="https://modenero.com"
                                 target="_blank"
                                 class="text-purple-400 hover:text-purple-300 transition-colors duration-200"
                             >
                                 Modenero DAO
-                            </NuxtLink>
+                            </a>
                             . All rights reserved.
                         </p>
                     </div>

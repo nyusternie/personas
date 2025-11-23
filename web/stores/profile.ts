@@ -87,9 +87,13 @@ export const useProfileStore = defineStore('profile', {
                 return this._session
             }
 
-            /* Request new session. */
-            const session = await $fetch('/api/newSession')
-            console.log('INIT SESSION (after fetch):', session)
+            /* Create new session locally instead of API call */
+            const session = {
+                id: 'session_' + Date.now(),
+                challenge: 'challenge_' + Math.random().toString(36).substr(2, 9),
+                expires: Date.now() + (24 * 60 * 60 * 1000) // 24 hours
+            }
+            console.log('INIT SESSION (created):', session)
 
             /* Set session. */
             this._setSession(session)
@@ -256,12 +260,12 @@ export const useProfileStore = defineStore('profile', {
                 return await this.initSession()
             }
 
-            // Optionally refresh the session with the server
+            // Update the session expiration locally
             try {
-                const refreshedSession = await $fetch('/api/refreshSession', {
-                    method: 'POST',
-                    body: { sessionId: this.sessionid }
-                })
+                const refreshedSession = {
+                    ...this._session,
+                    expires: Date.now() + (24 * 60 * 60 * 1000) // Refresh to 24 hours
+                }
                 this._setSession(refreshedSession)
                 return refreshedSession
             } catch (error) {

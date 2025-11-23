@@ -1,6 +1,6 @@
 {
   "name": "personas",
-  "version": "25.4.30",
+  "version": "25.11.23",
   "license": "MIT",
   "scripts": {
     "build": "nuxt build",

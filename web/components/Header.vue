@@ -1,42 +1,42 @@
 <!-- components/Header.vue -->
 
 <script setup lang="ts">
-/* Define properties. */
-interface Props {
-    isMobileMenuOpen?: boolean
-}
+    /* Define properties. */
+    interface Props {
+        isMobileMenuOpen?: boolean
+    }
 
-const props = defineProps<Props>()
+    const props = defineProps<Props>()
 
-const emit = defineEmits<{
-    toggleMobileMenu: []
-}>()
+    const emit = defineEmits<{
+        toggleMobileMenu: []
+    }>()
 
-/* Initialize stores */
-const Wallet = useWalletStore()
-const System = useSystemStore()
+    /* Initialize stores */
+    const Wallet = useWalletStore()
+    const System = useSystemStore()
 
-/* Navigation items */
-const navigation = [
-    { name: 'Features', href: '#features' },
-    { name: 'How It Works', href: '#how-it-works' },
-    { name: 'Use Cases', href: '#use-cases' },
-    { name: 'Documentation', href: '#docs' },
-]
+    /* Navigation items */
+    const navigation = [
+        { name: 'Features', href: '#features' },
+        { name: 'Use Cases', href: '#use-cases' },
+        { name: 'Technology', href: '#technology' },
+        { name: 'GitHub', href: 'https://github.com/nyusternie' },
+    ]
 
-/* Social links */
-const socialLinks = [
-    { name: 'GitHub', href: 'https://github.com/nyusternie', icon: 'github' },
-    { name: 'Twitter', href: 'https://x.com/0xShomari', icon: 'twitter' },
-]
+    /* Social links */
+    const socialLinks = [
+        { name: 'GitHub', href: 'https://github.com/nyusternie' },
+        { name: 'Twitter', href: 'https://x.com/0xShomari' },
+    ]
 
-const toggleMenu = () => {
-    emit('toggleMobileMenu')
-}
+    const toggleMenu = () => {
+        emit('toggleMobileMenu')
+    }
 
-const connectWallet = async () => {
-    await Wallet.connect()
-}
+    const connectWallet = async () => {
+        await Wallet.connect()
+    }
 </script>
 
 <template>
@@ -45,7 +45,7 @@ const connectWallet = async () => {
             <!-- Logo -->
             <div class="flex lg:flex-1">
                 <NuxtLink to="/" class="-m-1.5 p-1.5 flex items-center space-x-3">
-                    <img class="h-12 w-auto" src="~/assets/icon.png" alt="Personas" />
+                    <img class="h-12 w-auto" src="/icon.png" alt="Personas" />
                     <span class="text-2xl font-bold text-white">Personas</span>
                 </NuxtLink>
             </div>
@@ -74,7 +74,7 @@ const connectWallet = async () => {
                         class="text-gray-300 hover:text-white transition-colors duration-200"
                     >
                         <span class="sr-only">{{ social.name }}</span>
-                        <Icon :name="social.icon" class="h-5 w-5" />
+                        {{ social.name }}
                     </a>
                 </div>
 
@@ -111,10 +111,11 @@ const connectWallet = async () => {
                     class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-400 hover:text-white transition-colors duration-200"
                 >
                     <span class="sr-only">Open main menu</span>
-                    <Icon
-                        :name="isMobileMenuOpen ? 'heroicons:x-mark' : 'heroicons:bars-3'"
-                        class="h-6 w-6"
-                    />
+                    <!-- Simple menu icon -->
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path v-if="!isMobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
                 </button>
             </div>
         </nav>
@@ -131,7 +132,7 @@ const connectWallet = async () => {
             >
                 <div class="flex items-center justify-between">
                     <NuxtLink to="/" class="-m-1.5 p-1.5 flex items-center space-x-3" @click="toggleMenu">
-                        <img class="h-10 w-auto" src="~/assets/icon.png" alt="Personas" />
+                        <img class="h-10 w-auto" src="/icon.png" alt="Personas" />
                         <span class="text-xl font-bold text-white">Personas</span>
                     </NuxtLink>
                     <button
@@ -140,7 +141,9 @@ const connectWallet = async () => {
                         class="-m-2.5 rounded-md p-2.5 text-gray-400 hover:text-white"
                     >
                         <span class="sr-only">Close menu</span>
-                        <Icon name="heroicons:x-mark" class="h-6 w-6" />
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
                     </button>
                 </div>
 
@@ -193,7 +196,7 @@ const connectWallet = async () => {
                                     class="text-gray-400 hover:text-white transition-colors duration-200"
                                 >
                                     <span class="sr-only">{{ social.name }}</span>
-                                    <Icon :name="social.icon" class="h-6 w-6" />
+                                    {{ social.name }}
                                 </a>
                             </div>
                         </div>

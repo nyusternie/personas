@@ -1,175 +1,252 @@
 <!-- pages/index.vue -->
 
 <template>
-    <main>
-        <!-- Hero section -->
-        <div class="relative isolate overflow-hidden bg-gray-900 pb-16 pt-14 sm:pb-20">
-            <img
-                src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2830&q=80&blend=111827&sat=-100&exp=15&blend-mode=multiply"
-                alt=""
-                class="absolute inset-0 -z-10 h-full w-full object-cover"
-            />
-            <div class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80" aria-hidden="true">
-                <div
-                    class="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-20 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
-                    style="
-                        clip-path: polygon(
-                            74.1% 44.1%,
-                            100% 61.6%,
-                            97.5% 26.9%,
-                            85.5% 0.1%,
-                            80.7% 2%,
-                            72.5% 32.5%,
-                            60.2% 62.4%,
-                            52.4% 68.1%,
-                            47.5% 58.3%,
-                            45.2% 34.5%,
-                            27.5% 76.7%,
-                            0.1% 64.9%,
-                            17.9% 100%,
-                            27.6% 76.8%,
-                            76.1% 97.7%,
-                            74.1% 44.1%
-                        );
-                    "
-                ></div>
-            </div>
-            <div class="mx-auto max-w-7xl px-6 lg:px-8">
-                <div class="mx-auto max-w-2xl py-12 sm:py-16 lg:py-24">
-                    <div class="hidden sm:mb-8 sm:flex sm:justify-center">
-                        <div class="relative rounded-full px-3 py-1 text-sm leading-6 text-gray-400 ring-1 ring-white/10 hover:ring-white/20">
-                            Announcing our next round of funding. <a href="javascript://" class="font-semibold text-white"><span class="absolute inset-0" aria-hidden="true"></span>Read more <span aria-hidden="true">&rarr;</span></a>
-                        </div>
-                    </div>
-
-                    <div class="text-center">
-                        <h1 class="text-4xl tracking-widest text-white sm:text-6xl">
-                            <span class="font-light uppercase text-7xl sm:text-9xl">Personas</span>
-                            <span class="block font-bold">Do Crypto Better!</span>
-                        </h1>
-
-                        <p class="mt-6 text-lg leading-8 text-gray-300">
-                            Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui lorem cupidatat commodo. Elit sunt amet fugiat veniam occaecat fugiat aliqua.
-                        </p>
-
-                        <div class="mt-10 flex items-center justify-center gap-x-6">
-                            <a
-                                href="javascript://"
-                                class="rounded-md bg-indigo-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400"
-                            >
-                                Get started
-                            </a>
-                            <a href="javascript://" class="text-sm font-semibold leading-6 text-white">Live demo <span aria-hidden="true">→</span></a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Logo cloud -->
-                <div class="mx-auto grid max-w-lg grid-cols-4 items-center gap-x-8 gap-y-10 sm:max-w-xl sm:grid-cols-6 sm:gap-x-10 lg:mx-0 lg:max-w-none lg:grid-cols-5">
-                    <img class="col-span-2 max-h-12 w-full object-contain lg:col-span-1" src="https://tailwindui.com/img/logos/158x48/transistor-logo-white.svg" alt="Transistor" width="158" height="48" />
-                    <img class="col-span-2 max-h-12 w-full object-contain lg:col-span-1" src="https://tailwindui.com/img/logos/158x48/reform-logo-white.svg" alt="Reform" width="158" height="48" />
-                    <img class="col-span-2 max-h-12 w-full object-contain lg:col-span-1" src="https://tailwindui.com/img/logos/158x48/tuple-logo-white.svg" alt="Tuple" width="158" height="48" />
-                    <img class="col-span-2 max-h-12 w-full object-contain sm:col-start-2 lg:col-span-1" src="https://tailwindui.com/img/logos/158x48/savvycal-logo-white.svg" alt="SavvyCal" width="158" height="48" />
-                    <img class="col-span-2 col-start-2 max-h-12 w-full object-contain sm:col-start-auto lg:col-span-1" src="https://tailwindui.com/img/logos/158x48/statamic-logo-white.svg" alt="Statamic" width="158" height="48" />
-                </div>
-            </div>
-
-            <div class="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]" aria-hidden="true">
-                <div
-                    class="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-20 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]"
-                    style="
-                        clip-path: polygon(
-                            74.1% 44.1%,
-                            100% 61.6%,
-                            97.5% 26.9%,
-                            85.5% 0.1%,
-                            80.7% 2%,
-                            72.5% 32.5%,
-                            60.2% 62.4%,
-                            52.4% 68.1%,
-                            47.5% 58.3%,
-                            45.2% 34.5%,
-                            27.5% 76.7%,
-                            0.1% 64.9%,
-                            17.9% 100%,
-                            27.6% 76.8%,
-                            76.1% 97.7%,
-                            74.1% 44.1%
-                        );
-                    "
-                ></div>
-            </div>
-        </div>
-
-        <Benefits />
-
-        <!-- Testimonial section -->
-        <div class="relative z-10 mt-12 bg-gray-900 pb-20 sm:mt-20 sm:pb-24 xl:pb-0">
-            <div class="absolute inset-0 overflow-hidden" aria-hidden="true">
-                <div class="absolute left-[calc(50%-19rem)] top-[calc(50%-36rem)] transform-gpu blur-3xl">
-                    <div
-                        class="aspect-[1097/1023] w-[68.5625rem] bg-gradient-to-r from-[#ff4694] to-[#776fff] opacity-25"
-                        style="
-                            clip-path: polygon(
-                                74.1% 44.1%,
-                                100% 61.6%,
-                                97.5% 26.9%,
-                                85.5% 0.1%,
-                                80.7% 2%,
-                                72.5% 32.5%,
-                                60.2% 62.4%,
-                                52.4% 68.1%,
-                                47.5% 58.3%,
-                                45.2% 34.5%,
-                                27.5% 76.7%,
-                                0.1% 64.9%,
-                                17.9% 100%,
-                                27.6% 76.8%,
-                                76.1% 97.7%,
-                                74.1% 44.1%
-                            );
-                        "
-                    ></div>
-                </div>
-            </div>
-            <div class="mx-auto flex max-w-7xl flex-col items-center gap-x-8 gap-y-10 px-6 sm:gap-y-8 lg:px-8 xl:flex-row xl:items-stretch">
-                <div class="-mt-8 w-full max-w-2xl xl:-mb-8 xl:w-96 xl:flex-none">
-                    <div class="relative aspect-[2/1] h-full md:-mx-8 xl:mx-0 xl:aspect-auto">
-                        <img
-                            class="absolute inset-0 h-full w-full rounded-2xl bg-gray-800 object-cover shadow-2xl"
-                            src="https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2102&q=80"
-                            alt=""
-                        />
-                    </div>
-                </div>
-                <div class="w-full max-w-2xl xl:max-w-none xl:flex-auto xl:px-16 xl:py-24">
-                    <figure class="relative isolate pt-6 sm:pt-12">
-                        <svg viewBox="0 0 162 128" fill="none" aria-hidden="true" class="absolute left-0 top-0 -z-10 h-32 stroke-white/20">
-                            <path
-                                id="b56e9dab-6ccb-4d32-ad02-6b4bb5d9bbeb"
-                                d="M65.5697 118.507L65.8918 118.89C68.9503 116.314 71.367 113.253 73.1386 109.71C74.9162 106.155 75.8027 102.28 75.8027 98.0919C75.8027 94.237 75.16 90.6155 73.8708 87.2314C72.5851 83.8565 70.8137 80.9533 68.553 78.5292C66.4529 76.1079 63.9476 74.2482 61.0407 72.9536C58.2795 71.4949 55.276 70.767 52.0386 70.767C48.9935 70.767 46.4686 71.1668 44.4872 71.9924L44.4799 71.9955L44.4726 71.9988C42.7101 72.7999 41.1035 73.6831 39.6544 74.6492C38.2407 75.5916 36.8279 76.455 35.4159 77.2394L35.4047 77.2457L35.3938 77.2525C34.2318 77.9787 32.6713 78.3634 30.6736 78.3634C29.0405 78.3634 27.5131 77.2868 26.1274 74.8257C24.7483 72.2185 24.0519 69.2166 24.0519 65.8071C24.0519 60.0311 25.3782 54.4081 28.0373 48.9335C30.703 43.4454 34.3114 38.345 38.8667 33.6325C43.5812 28.761 49.0045 24.5159 55.1389 20.8979C60.1667 18.0071 65.4966 15.6179 71.1291 13.7305C73.8626 12.8145 75.8027 10.2968 75.8027 7.38572C75.8027 3.6497 72.6341 0.62247 68.8814 1.1527C61.1635 2.2432 53.7398 4.41426 46.6119 7.66522C37.5369 11.6459 29.5729 17.0612 22.7236 23.9105C16.0322 30.6019 10.618 38.4859 6.47981 47.558L6.47976 47.558L6.47682 47.5647C2.4901 56.6544 0.5 66.6148 0.5 77.4391C0.5 84.2996 1.61702 90.7679 3.85425 96.8404L3.8558 96.8445C6.08991 102.749 9.12394 108.02 12.959 112.654L12.959 112.654L12.9646 112.661C16.8027 117.138 21.2829 120.739 26.4034 123.459L26.4033 123.459L26.4144 123.465C31.5505 126.033 37.0873 127.316 43.0178 127.316C47.5035 127.316 51.6783 126.595 55.5376 125.148L55.5376 125.148L55.5477 125.144C59.5516 123.542 63.0052 121.456 65.9019 118.881L65.5697 118.507Z"
-                            />
-                            <use href="#b56e9dab-6ccb-4d32-ad02-6b4bb5d9bbeb" x="86" />
-                        </svg>
-                        <blockquote class="text-xl font-semibold leading-8 text-white sm:text-2xl sm:leading-9">
-                            <p>
-                                Gravida quam mi erat tortor neque molestie. Auctor aliquet at porttitor a enim nunc suscipit tincidunt nunc. Et non lorem tortor posuere. Nunc eu scelerisque interdum eget tellus non nibh scelerisque
-                                bibendum.
+    <div>
+        <div class="relative isolate">
+            <!-- Hero Section -->
+            <div class="relative pt-14">
+                <div class="py-24 sm:py-32">
+                    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+                        <div class="mx-auto max-w-4xl text-center">
+                            <h1 class="text-4xl font-bold tracking-tight text-white sm:text-6xl">
+                                🤖 PERSONAS
+                            </h1>
+                            <p class="mt-6 text-2xl leading-8 text-gray-300">
+                                Personal Finance AI Assistants — designed to grow and adapt to your busy digital lifestyle.
                             </p>
-                        </blockquote>
-                        <figcaption class="mt-8 text-base">
-                            <div class="font-semibold text-white">Judith Black</div>
-                            <div class="mt-1 text-gray-400">CEO of Tuple</div>
-                        </figcaption>
-                    </figure>
+                            <p class="mt-6 text-lg leading-8 text-gray-400 max-w-3xl mx-auto">
+                                Personas are revolutionizing how users interact with Bitcoin Cash by solving its biggest challenges: <strong>complexity and security</strong>. Personas make Web3 intuitive, seamless, and safe for everyone — paving the way for true mass adoption.
+                            </p>
+                            <div class="mt-10 flex items-center justify-center gap-x-6">
+                                <a href="#features" class="rounded-md bg-purple-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-purple-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-600">
+                                    Explore Features
+                                </a>
+                                <a href="https://github.com/nyusternie" target="_blank" class="text-sm font-semibold leading-6 text-white">
+                                    View on GitHub <span aria-hidden="true">→</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Key Features Section -->
+            <div id="features" class="py-24 sm:py-32">
+                <div class="mx-auto max-w-7xl px-6 lg:px-8">
+                    <div class="mx-auto max-w-4xl text-center">
+                        <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                            🧩 Key Features
+                        </h2>
+                        <p class="mt-4 text-lg text-gray-400">
+                            Everything you need for seamless crypto management
+                        </p>
+                    </div>
+                    <dl class="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-8 sm:mt-20 sm:grid-cols-2 lg:max-w-none lg:grid-cols-3">
+                        <div class="flex flex-col gap-y-6 border-l border-white/10 pl-6">
+                            <dt class="text-sm font-semibold leading-6 text-white">
+                                <div class="mb-2 text-2xl">🤖</div>
+                                AI Assistant
+                            </dt>
+                            <dd class="flex flex-auto flex-col text-base leading-7 text-gray-300">
+                                <p class="flex-auto">
+                                    Execute transactions and interact with dApps using simple, natural language commands like <strong>"Swap 0.1 BCH for MUSD on Cauldron"</strong>.
+                                </p>
+                            </dd>
+                        </div>
+                        <div class="flex flex-col gap-y-6 border-l border-white/10 pl-6">
+                            <dt class="text-sm font-semibold leading-6 text-white">
+                                <div class="mb-2 text-2xl">🔐</div>
+                                Passkey Authentication
+                            </dt>
+                            <dd class="flex flex-auto flex-col text-base leading-7 text-gray-300">
+                                <p class="flex-auto">
+                                    No more seed phrases! Secure your wallet with phishing-resistant passkeys <em>(Face ID, Touch ID, PIN)</em> for a user-friendly and safe experience.
+                                </p>
+                            </dd>
+                        </div>
+                        <div class="flex flex-col gap-y-6 border-l border-white/10 pl-6">
+                            <dt class="text-sm font-semibold leading-6 text-white">
+                                <div class="mb-2 text-2xl">⛽</div>
+                                Gasless Transactions
+                            </dt>
+                            <dd class="flex flex-auto flex-col text-base leading-7 text-gray-300">
+                                <p class="flex-auto">
+                                    Powered by Account Abstraction, the Personas Paymaster setup handles miner fees, allowing users to transact with CashTokens freely without needing native BCH upfront.
+                                </p>
+                            </dd>
+                        </div>
+                        <div class="flex flex-col gap-y-6 border-l border-white/10 pl-6">
+                            <dt class="text-sm font-semibold leading-6 text-white">
+                                <div class="mb-2 text-2xl">🔌</div>
+                                Universal Compatibility
+                            </dt>
+                            <dd class="flex flex-auto flex-col text-base leading-7 text-gray-300">
+                                <p class="flex-auto">
+                                    Instantly connect to any dApp across the Bitcoin Cash ecosystem with built-in WalletConnect support.
+                                </p>
+                            </dd>
+                        </div>
+                        <div class="flex flex-col gap-y-6 border-l border-white/10 pl-6">
+                            <dt class="text-sm font-semibold leading-6 text-white">
+                                <div class="mb-2 text-2xl">📱</div>
+                                Multi-Platform Access
+                            </dt>
+                            <dd class="flex flex-auto flex-col text-base leading-7 text-gray-300">
+                                <p class="flex-auto">
+                                    Use your wallet seamlessly as a web app or directly inside the Telegram Mini App.
+                                </p>
+                            </dd>
+                        </div>
+                        <div class="flex flex-col gap-y-6 border-l border-white/10 pl-6">
+                            <dt class="text-sm font-semibold leading-6 text-white">
+                                <div class="mb-2 text-2xl">🛡️</div>
+                                Social Recovery
+                            </dt>
+                            <dd class="flex flex-auto flex-col text-base leading-7 text-gray-300">
+                                <p class="flex-auto">
+                                    Replace technical barriers like seed phrases with social recovery mechanisms for enhanced security and user experience.
+                                </p>
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+
+            <!-- Real World Impact Section -->
+            <div id="use-cases" class="py-24 sm:py-32 bg-gray-800/50">
+                <div class="mx-auto max-w-7xl px-6 lg:px-8">
+                    <div class="mx-auto max-w-4xl">
+                        <div class="text-center">
+                            <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                                🎯 Real-World Impact
+                            </h2>
+                            <p class="mt-4 text-lg text-gray-400">
+                                Driving mass adoption for users resistant to crypto
+                            </p>
+                        </div>
+                        <div class="mt-16">
+                            <div class="bg-gray-900 rounded-3xl p-8 md:p-12 border border-gray-700">
+                                <h3 class="text-2xl font-bold text-white text-center mb-8">
+                                    Retirement Planning with Asset Vaults
+                                </h3>
+                                <div class="grid md:grid-cols-2 gap-8 items-center">
+                                    <div>
+                                        <p class="text-lg text-gray-300 mb-6">
+                                            Personas offers real-world use-cases specifically designed to drive mass adoption from "normies" that resist crypto at every turn.
+                                        </p>
+                                        <ul class="space-y-4 text-gray-300">
+                                            <li class="flex items-start">
+                                                <span class="text-green-400 mr-3 mt-1">✓</span>
+                                                <span>Secure long-term asset storage with institutional-grade security</span>
+                                            </li>
+                                            <li class="flex items-start">
+                                                <span class="text-green-400 mr-3 mt-1">✓</span>
+                                                <span>Automated investment strategies powered by AI</span>
+                                            </li>
+                                            <li class="flex items-start">
+                                                <span class="text-green-400 mr-3 mt-1">✓</span>
+                                                <span>Tax-optimized transaction planning</span>
+                                            </li>
+                                            <li class="flex items-start">
+                                                <span class="text-green-400 mr-3 mt-1">✓</span>
+                                                <span>Inheritance and estate planning features</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="bg-gradient-to-br from-purple-600 to-blue-600 rounded-2xl p-6 text-white">
+                                        <h4 class="text-xl font-bold mb-4">For Everyday Users</h4>
+                                        <p class="mb-4">By replacing technical barriers like <strong>seed phrases with social recovery</strong> and allowing <strong>token transfers free of sats</strong>, Personas make interacting with decentralized finance, NFTs, and dApps as easy as sending a text message.</p>
+                                        <p>No technical knowledge required - just tell your AI assistant what you want to do in plain English.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Technology Stack Section -->
+            <div id="technology" class="py-24 sm:py-32">
+                <div class="mx-auto max-w-7xl px-6 lg:px-8">
+                    <div class="mx-auto max-w-4xl text-center">
+                        <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                            👨🏻💻 Technology Stack
+                        </h2>
+                        <p class="mt-4 text-lg text-gray-400">
+                            Built with modern, robust technologies
+                        </p>
+                    </div>
+                    <div class="mt-16">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                            <div class="bg-gray-800/50 rounded-2xl p-8 border border-gray-700">
+                                <div class="text-3xl mb-4">⚡</div>
+                                <h3 class="text-xl font-bold text-white mb-4">Frontend</h3>
+                                <ul class="text-gray-300 space-y-2">
+                                    <li>Nuxt v3.x + Vite</li>
+                                    <li>Tailwind CSS v4</li>
+                                    <li>Vue 3 Composition API</li>
+                                </ul>
+                            </div>
+                            <div class="bg-gray-800/50 rounded-2xl p-8 border border-gray-700">
+                                <div class="text-3xl mb-4">🔗</div>
+                                <h3 class="text-xl font-bold text-white mb-4">Blockchain</h3>
+                                <ul class="text-gray-300 space-y-2">
+                                    <li>Bitcoin Cash</li>
+                                    <li>CashScript v0.11.5</li>
+                                    <li>Account Abstraction</li>
+                                </ul>
+                            </div>
+                            <div class="bg-gray-800/50 rounded-2xl p-8 border border-gray-700">
+                                <div class="text-3xl mb-4">🤖</div>
+                                <h3 class="text-xl font-bold text-white mb-4">AI & Infrastructure</h3>
+                                <ul class="text-gray-300 space-y-2">
+                                    <li>AI Natural Language Processing</li>
+                                    <li>WalletConnect Integration</li>
+                                    <li>Multi-Platform Support</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-16 text-center">
+                        <p class="text-lg text-gray-300 max-w-3xl mx-auto">
+                            By combining these powerful features, Personas remove the friction that has kept millions on the sidelines. It's not just a wallet; it's your personal, intelligent gateway to the decentralized world.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA Section -->
+            <div class="py-24 sm:py-32 bg-gradient-to-r from-purple-600 to-blue-600">
+                <div class="mx-auto max-w-7xl px-6 lg:px-8">
+                    <div class="mx-auto max-w-4xl text-center">
+                        <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                            Ready to Revolutionize Your Crypto Experience?
+                        </h2>
+                        <p class="mt-4 text-lg leading-8 text-purple-100">
+                            Join the future of personal finance with AI-powered assistance.
+                        </p>
+                        <div class="mt-10 flex items-center justify-center gap-x-6">
+                            <button
+                                @click="connectWallet"
+                                class="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-purple-600 shadow-sm hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                            >
+                                Connect Your Wallet
+                            </button>
+                            <a href="https://github.com/nyusternie" target="_blank" class="text-sm font-semibold leading-6 text-white">
+                                Learn More <span aria-hidden="true">→</span>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <FAQ />
-    </main>
+    </div>
 </template>
 
 <script setup lang="ts">
-//
+    const Wallet = useWalletStore()
+
+    const connectWallet = async () => {
+        await Wallet.connect()
+    }
 </script>
