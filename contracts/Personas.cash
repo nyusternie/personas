@@ -21,6 +21,7 @@ pragma cashscript ^0.9.0;
  *
  * Copyright (c) 2025 0xShomari. All rights reserved.
  */
+
 contract Personas {
     // Primary owner's public key
     pub key owner;
@@ -38,89 +39,56 @@ contract Personas {
     int recoveryStartBlock;
     bool recoveryActive;
 
-    // Define reusable functions using OP_DEFINE
-    bytes signatureVerificationFunction =
-        new bytes(0x00) + // function identifier 0
-        new bytes('OP_CHECKSIG') +
-        new bytes(0x89) + // OP_DEFINE
-        new bytes(0x00);  // function identifier
-
-    bytes guardianVerificationFunction =
-        new bytes(0x01) + // function identifier 1
-        new bytes(
-            // Takes: guardian pubkey, signature, guardian index
-            // Returns: 1 if valid signature from guardian
-            'OP_ROT ' +           // Get guardian pubkey to top
-            'OP_0 OP_INVOKE ' +   // Verify signature
-            'OP_IF ' +
-            'OP_1 ' +             // Valid guardian signature
-            'OP_ELSE ' +
-            'OP_0 ' +             // Invalid
-            'OP_ENDIF'
-        ) +
-        new bytes(0x89) + // OP_DEFINE
-        new bytes(0x01);  // function identifier
-
     // Normal spending operation - owner signature
     function spend(sig ownerSig, bytes32 dest, int amount) {
-        // Verify owner signature
         require(checkSig(ownerSig, owner));
-
-        // Simple transfer - in practice you'd add more logic
         require(tx.outputs[0].value >= amount);
         require(tx.outputs[0].lockingBytecode == dest);
     }
 
-    // Initiate social recovery process
+    // Optimized guardian signature verification using loops
+    function verifyGuardianSignatures(sig[] guardianSigs, int requiredCount) internal returns (bool) {
+        require(guardianSigs.length == guardians.length);
+
+        int validSigs = 0;
+        int i = 0;
+
+        // Use loop for efficient signature verification
+        do {
+            if (checkSig(guardianSigs[i], guardians[i])) {
+                validSigs = validSigs + 1;
+            }
+            i = i + 1;
+        } while (i < guardians.length);
+
+        return validSigs >= requiredCount;
+    }
+
+    // Initiate social recovery process with optimized loop
     function initiateRecovery(sig[] guardianSigs, pub key[] newGuardians) {
         require(!recoveryActive);
         require(newGuardians.length >= requiredGuardians);
-
-        // Verify guardian signatures
-        int validSigs = 0;
-
-        // Use loops for efficient signature verification across guardians
-        bytes script = new bytes(0);
-
-        // Push initial counter
-        script += new bytes('OP_0'); // valid signature counter
-
-        // Loop through guardians and verify signatures
-        script += new bytes('OP_BEGIN');
-
-        // Process each guardian signature
-        for (int i = 0; i < guardians.length; i++) {
-            script += guardianSigs[i];
-            script += guardians[i];
-            script += numToBin(i);
-            script += new bytes(0x01); // function identifier 1
-            script += new bytes(0x8a); // OP_INVOKE
-
-            // Add to counter if valid
-            script += new bytes('OP_ADD');
-        }
-
-        // Verify we have enough signatures
-        script += numToBin(requiredGuardians);
-        script += new bytes('OP_GREATERTHANOREQUAL VERIFY');
+        require(verifyGuardianSignatures(guardianSigs, requiredGuardians));
 
         // Set recovery state
         recoveryActive = true;
         recoveryStartBlock = tx.time;
 
-        // Update guardians
-        guardians = newGuardians;
+        // Update guardians using loop
+        guardians.length = 0; // Clear existing guardians
+        int i = 0;
+        do {
+            guardians.push(newGuardians[i]);
+            i = i + 1;
+        } while (i < newGuardians.length);
     }
 
     // Complete recovery by new owner after timeout
     function completeRecovery(sig newOwnerSig, pub key newOwner) {
         require(recoveryActive);
         require(tx.time >= recoveryStartBlock + recoveryTimeout);
-
-        // Verify new owner signature
         require(checkSig(newOwnerSig, newOwner));
 
-        // Update owner
         owner = newOwner;
         recoveryActive = false;
     }
@@ -128,14 +96,11 @@ contract Personas {
     // Emergency cancel recovery (by current owner)
     function cancelRecovery(sig ownerSig) {
         require(recoveryActive);
-
-        // Verify current owner still has control
         require(checkSig(ownerSig, owner));
-
         recoveryActive = false;
     }
 
-    // Multi-sig spending (owner + guardians)
+    // Multi-sig spending with optimized signature checking
     function multiSigSpend(
         sig ownerSig,
         sig[] guardianSigs,
@@ -147,82 +112,26 @@ contract Personas {
 
         int validSigs = 0;
 
-        // Verify owner signature
+        // Count owner signature
         if (checkSig(ownerSig, owner)) {
-            validSigs += 1;
+            validSigs = validSigs + 1;
         }
 
-        // Verify guardian signatures
-        bytes script = new bytes(0);
-        script += numToBin(validSigs); // Start with owner sig status
+        // Count guardian signatures using loop
+        int i = 0;
+        do {
+            if (checkSig(guardianSigs[i], guardians[i])) {
+                validSigs = validSigs + 1;
+            }
+            i = i + 1;
+        } while (i < guardianSigs.length && validSigs < requiredMultiSig);
 
-        // Loop through guardian signatures
-        for (int i = 0; i < guardians.length; i++) {
-            script += guardianSigs[i];
-            script += guardians[i];
-            script += numToBin(i);
-            script += new bytes(0x01); // function identifier 1
-            script += new bytes(0x8a); // OP_INVOKE
-            script += new bytes('OP_ADD'); // Add to counter
-        }
-
-        // Verify we have enough signatures
-        script += numToBin(requiredMultiSig);
-        script += new bytes('OP_GREATERTHANOREQUAL VERIFY');
-
-        // Execute transfer
+        require(validSigs >= requiredMultiSig);
         require(tx.outputs[0].value >= amount);
         require(tx.outputs[0].lockingBytecode == dest);
     }
 
-    // Batch guardian operations using Functions CHIP
-    bytes batchGuardianOpFunction =
-        new bytes(0x02) + // function identifier 2
-        new bytes(
-            // Generic function for batch guardian operations
-            // Takes: operation type, signature array
-            // Returns: success
-            'OP_BEGIN ' +
-            'OP_DUP ' +              // Duplicate operation type
-            'OP_1 OP_EQUAL ' +       // Check if recovery initiation
-            'OP_IF ' +
-            'OP_DROP ' +
-            // Recovery initiation logic would go here
-            'OP_1 ' +
-            'OP_ELSE ' +
-            'OP_1 OP_EQUAL ' +       // Check if multi-sig spend
-            'OP_IF ' +
-            'OP_DROP ' +
-            // Multi-sig logic would go here
-            'OP_1 ' +
-            'OP_ELSE ' +
-            'OP_0 ' +                // Unknown operation
-            'OP_ENDIF ' +
-            'OP_ENDIF ' +
-            'OP_UNTIL'
-        ) +
-        new bytes(0x89) + // OP_DEFINE
-        new bytes(0x02);  // function identifier
-
-    // Flexible guardian-based operation
-    function guardianOperation(
-        int operationType,
-        sig[] sigs,
-        bytes data
-    ) {
-        require(operationType >= 1 && operationType <= 3);
-
-        // Use the batch operation function
-        bytes script = new bytes(0);
-        script += data;
-        script += sigs;
-        script += numToBin(operationType);
-        script += new bytes(0x02); // function identifier 2
-        script += new bytes(0x8a); // OP_INVOKE
-        script += new bytes('OP_VERIFY');
-    }
-
-    // Add new guardian (requires owner + existing guardian consensus)
+    // Add new guardian with optimized consensus checking
     function addGuardian(
         sig ownerSig,
         sig[] guardianSigs,
@@ -235,27 +144,20 @@ contract Personas {
 
         int validSigs = 1; // Owner signature already verified
 
-        // Verify guardian consensus signatures
-        bytes script = new bytes(0);
-        script += numToBin(validSigs);
+        // Count guardian consensus using loop
+        int i = 0;
+        do {
+            if (checkSig(guardianSigs[i], guardians[i])) {
+                validSigs = validSigs + 1;
+            }
+            i = i + 1;
+        } while (i < guardianSigs.length);
 
-        for (int i = 0; i < guardians.length; i++) {
-            script += guardianSigs[i];
-            script += guardians[i];
-            script += numToBin(i);
-            script += new bytes(0x01); // function identifier 1
-            script += new bytes(0x8a); // OP_INVOKE
-            script += new bytes('OP_ADD');
-        }
-
-        script += numToBin(requiredConsensus);
-        script += new bytes('OP_GREATERTHANOREQUAL VERIFY');
-
-        // Add new guardian
+        require(validSigs >= requiredConsensus);
         guardians.push(newGuardian);
     }
 
-    // Remove guardian (requires owner + existing guardian consensus)
+    // Remove guardian with optimized operations
     function removeGuardian(
         sig ownerSig,
         sig[] guardianSigs,
@@ -269,160 +171,66 @@ contract Personas {
 
         int validSigs = 1; // Owner signature already verified
 
-        // Verify guardian consensus signatures
-        bytes script = new bytes(0);
-        script += numToBin(validSigs);
-
-        for (int i = 0; i < guardians.length; i++) {
-            if (i != guardianIndex) { // Don't require signature from guardian being removed
-                script += guardianSigs[i];
-                script += guardians[i];
-                script += numToBin(i);
-                script += new bytes(0x01); // function identifier 1
-                script += new bytes(0x8a); // OP_INVOKE
-                script += new bytes('OP_ADD');
+        // Count guardian consensus (excluding the one being removed)
+        int i = 0;
+        do {
+            if (i != guardianIndex && checkSig(guardianSigs[i], guardians[i])) {
+                validSigs = validSigs + 1;
             }
-        }
+            i = i + 1;
+        } while (i < guardianSigs.length);
 
-        script += numToBin(requiredConsensus);
-        script += new bytes('OP_GREATERTHANOREQUAL VERIFY');
+        require(validSigs >= requiredConsensus);
 
-        // Remove guardian
-        guardians = removeElement(guardians, guardianIndex);
+        // Remove guardian using loop-based array manipulation
+        pub key[] memory newGuardians = new pub key[](guardians.length - 1);
+        int j = 0;
+        int k = 0;
+
+        do {
+            if (k != guardianIndex) {
+                newGuardians[j] = guardians[k];
+                j = j + 1;
+            }
+            k = k + 1;
+        } while (k < guardians.length);
+
+        guardians = newGuardians;
     }
 
-    // Update recovery threshold
-    function updateRecoveryThreshold(
-        sig ownerSig,
-        sig[] guardianSigs,
-        int newThreshold,
-        int requiredConsensus
-    ) {
-        require(!recoveryActive);
-        require(newThreshold > 0 && newThreshold <= guardians.length);
-        require(checkSig(ownerSig, owner));
-        require(requiredConsensus <= guardians.length + 1);
-
-        int validSigs = 1; // Owner signature already verified
-
-        // Verify guardian consensus signatures
-        bytes script = new bytes(0);
-        script += numToBin(validSigs);
-
-        for (int i = 0; i < guardians.length; i++) {
-            script += guardianSigs[i];
-            script += guardians[i];
-            script += numToBin(i);
-            script += new bytes(0x01); // function identifier 1
-            script += new bytes(0x8a); // OP_INVOKE
-            script += new bytes('OP_ADD');
-        }
-
-        script += numToBin(requiredConsensus);
-        script += new bytes('OP_GREATERTHANOREQUAL VERIFY');
-
-        // Update threshold
-        requiredGuardians = newThreshold;
-    }
-
-    // Emergency freeze (requires majority consensus)
+    // Emergency freeze with majority consensus
     function emergencyFreeze(sig[] guardianSigs) {
         int validSigs = 0;
-
-        // Use loops for efficient signature verification
-        bytes script = new bytes(0);
-        script += new bytes('OP_0'); // valid signature counter
-
-        for (int i = 0; i < guardians.length; i++) {
-            script += guardianSigs[i];
-            script += guardians[i];
-            script += numToBin(i);
-            script += new bytes(0x01); // function identifier 1
-            script += new bytes(0x8a); // OP_INVOKE
-            script += new bytes('OP_ADD');
-        }
-
-        // Require majority consensus for emergency freeze
         int majority = guardians.length / 2 + 1;
-        script += numToBin(majority);
-        script += new bytes('OP_GREATERTHANOREQUAL VERIFY');
+        int i = 0;
 
-        // Set recovery active to freeze account
+        // Count guardian signatures using loop
+        do {
+            if (checkSig(guardianSigs[i], guardians[i])) {
+                validSigs = validSigs + 1;
+            }
+            i = i + 1;
+        } while (i < guardianSigs.length);
+
+        require(validSigs >= majority);
         recoveryActive = true;
         recoveryStartBlock = tx.time;
     }
 
-    // Helper function to remove element from array
-    function removeElement(pub key[] array, int index) returns (pub key[]) {
-        pub key[] newArray;
-        for (int i = 0; i < array.length; i++) {
-            if (i != index) {
-                newArray.push(array[i]);
-            }
-        }
-        return newArray;
+    // Get all guardian addresses
+    function getGuardians() returns (pub key[] memory) {
+        return guardians;
     }
 
-    // View functions (conceptual - would need separate pattern in CashScript)
-    function getGuardianCount() returns (int) {
-        return guardians.length;
-    }
-
+    // Check if recovery is active
     function isRecoveryActive() returns (bool) {
         return recoveryActive;
     }
 
+    // Get recovery time remaining
     function getRecoveryTimeRemaining() returns (int) {
         if (!recoveryActive) return 0;
         int elapsed = tx.time - recoveryStartBlock;
         return recoveryTimeout - elapsed > 0 ? recoveryTimeout - elapsed : 0;
-    }
-
-    // Helper function for number conversion
-    function numToBin(int n) returns (bytes) {
-        if (n == 0) return new bytes('OP_0');
-        if (n == 1) return new bytes('OP_1');
-        if (n <= 16) return new bytes(uint8(n - 1 + 81));
-        // For contract parameters, we'd use appropriate push ops
-        return new bytes('OP_PUSHNUM_' + toString(n));
-    }
-}
-
-// Example usage contract with specific parameters
-contract MyPersonasWallet(pub key mainOwner, pub key[] myGuardians) {
-    // Initialize with 3-of-5 multisig recovery
-    PersonasWallet wallet = PersonasWallet(
-        mainOwner,
-        myGuardians,
-        3,  // requiredGuardians
-        144  // recoveryTimeout (approx 1 day)
-    );
-
-    function spend(sig ownerSig, bytes32 dest, int amount) {
-        wallet.spend(ownerSig, dest, amount);
-    }
-
-    function initiateRecovery(sig[] guardianSigs, pub key[] newGuardians) {
-        wallet.initiateRecovery(guardianSigs, newGuardians);
-    }
-
-    function multiSigSpend(
-        sig ownerSig,
-        sig[] guardianSigs,
-        bytes32 dest,
-        int amount
-    ) {
-        // 2-of-(1 owner + N guardians) spending
-        wallet.multiSigSpend(ownerSig, guardianSigs, dest, amount, 2);
-    }
-
-    function addGuardian(
-        sig ownerSig,
-        sig[] guardianSigs,
-        pub key newGuardian
-    ) {
-        // Require owner + 2/3 of existing guardians
-        int required = guardians.length * 2 / 3 + 1;
-        wallet.addGuardian(ownerSig, guardianSigs, newGuardian, required);
     }
 }

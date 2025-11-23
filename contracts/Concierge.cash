@@ -20,18 +20,19 @@ pragma cashscript ^0.9.0;
  *
  * Copyright (c) 2025 0xShomari. All rights reserved.
  */
+
 contract Concierge {
     // Wallet owner
     pub key owner;
 
     // Permission structure
     struct Permission {
-        int actionType;      // Type of action (staking, payout, etc.)
-        int limitAmount;     // Maximum amount per period
-        int periodType;      // Daily, weekly, monthly
-        int lastUsed;        // Timestamp of last use
-        int usedThisPeriod;  // Amount used in current period
-        bool enabled;        // Whether this permission is active
+        int actionType;
+        int limitAmount;
+        int periodType;
+        int lastUsed;
+        int usedThisPeriod;
+        bool enabled;
     }
 
     // Mapping of permission IDs to Permission structs
@@ -54,7 +55,7 @@ contract Concierge {
     int constant PERIOD_DAILY = 1;
     int constant PERIOD_WEEKLY = 2;
     int constant PERIOD_MONTHLY = 3;
-    int constant PERIOD_ONCE = 4; // One-time permission
+    int constant PERIOD_ONCE = 4;
 
     // Global limits
     int globalDailyLimit;
@@ -65,87 +66,184 @@ contract Concierge {
     int globalMonthlyUsed;
     int lastGlobalReset;
 
-    // Emergency freeze state
-    bool emergencyFrozen;
-    int freezeUntil;
-
     // Multi-sig requirements for sensitive actions
     pub key[] administrators;
     int requiredAdminConsensus;
 
-    // Define reusable functions using OP_DEFINE
-    bytes periodResetFunction =
-        new bytes(0x00) + // function identifier 0
-        new bytes(
-            // Reset period counters if needed
-            'OP_DUP ' +
-            'OP_1 OP_EQUAL ' + // Daily
-            'OP_IF ' +
-            'OP_2 OP_ROLL ' + // Get timestamp
-            'OP_86400 OP_SUB ' + // 24 hours ago
-            'OP_GREATERTHAN ' +
-            'OP_IF ' +
-            'OP_0 ' + // Reset daily used
-            'OP_ELSE ' +
-            'OP_1 ' + // Keep current
-            'OP_ENDIF ' +
-            'OP_ELSE ' +
-            'OP_DUP ' +
-            'OP_2 OP_EQUAL ' + // Weekly
-            'OP_IF ' +
-            'OP_2 OP_ROLL ' +
-            'OP_604800 OP_SUB ' + // 7 days ago
-            'OP_GREATERTHAN ' +
-            'OP_IF ' +
-            'OP_0 ' +
-            'OP_ELSE ' +
-            'OP_1 ' +
-            'OP_ENDIF ' +
-            'OP_ELSE ' +
-            'OP_3 OP_EQUAL ' + // Monthly
-            'OP_IF ' +
-            'OP_2 OP_ROLL ' +
-            'OP_2592000 OP_SUB ' + // 30 days ago
-            'OP_GREATERTHAN ' +
-            'OP_IF ' +
-            'OP_0 ' +
-            'OP_ELSE ' +
-            'OP_1 ' +
-            'OP_ENDIF ' +
-            'OP_ELSE ' +
-            'OP_1 ' + // For one-time, always check
-            'OP_ENDIF ' +
-            'OP_ENDIF ' +
-            'OP_ENDIF'
-        ) +
-        new bytes(0x89) + // OP_DEFINE
-        new bytes(0x00);  // function identifier
+    // Check if an action is permitted with optimized period checking
+    function checkPermission(int permissionId, int amount) returns (bool) {
+        require(permissionId >= 0 && permissionId < permissions.length);
 
-    bytes permissionCheckFunction =
-        new bytes(0x01) + // function identifier 1
-        new bytes(
-            // Check if action is permitted
-            // Takes: permissionId, amount, currentTime
-            // Returns: 1 if permitted, 0 if not
-            'OP_OVER OP_OVER OP_OVER ' + // Duplicate inputs
-            'OP_0 OP_INVOKE ' +         // Check period reset
-            'OP_IF ' +
-            'OP_0 OP_SWAP ' +           // Reset used amount
-            'OP_ELSE ' +
-            'OP_1 OP_SWAP ' +           // Keep used amount
-            'OP_ENDIF ' +
-            'OP_DROP ' +
-            'OP_OVER OP_ADD ' +         // Add new amount to used
-            'OP_DUP ' +
-            'OP_4 OP_PICK ' +           // Get limit amount
-            'OP_LESSTHANOREQUAL ' +     // Check within limit
-            'OP_VERIFY ' +
-            'OP_1 '                     // Success
-        ) +
-        new bytes(0x89) + // OP_DEFINE
-        new bytes(0x01);  // function identifier
+        Permission memory perm = permissions[permissionId];
+        require(perm.enabled);
 
-    // Initialize concierge with owner and settings
+        // Reset periods if needed
+        resetPeriods();
+
+        // Check global limits
+        require(globalDailyUsed + amount <= globalDailyLimit);
+        require(globalWeeklyUsed + amount <= globalWeeklyLimit);
+        require(globalMonthlyUsed + amount <= globalMonthlyLimit);
+
+        // Check permission-specific limits
+        int periodReset = shouldResetPeriod(perm.periodType, perm.lastUsed);
+        int currentUsed = periodReset == 1 ? 0 : perm.usedThisPeriod;
+
+        require(currentUsed + amount <= perm.limitAmount);
+
+        // Update usage
+        globalDailyUsed += amount;
+        globalWeeklyUsed += amount;
+        globalMonthlyUsed += amount;
+        permissions[permissionId].usedThisPeriod = currentUsed + amount;
+        permissions[permissionId].lastUsed = tx.time;
+
+        return true;
+    }
+
+    // Reset period counters using optimized time checking
+    function resetPeriods() internal {
+        int currentTime = tx.time;
+
+        bool dailyReset = (currentTime - lastGlobalReset) >= 86400;
+        bool weeklyReset = (currentTime - lastGlobalReset) >= 604800;
+        bool monthlyReset = (currentTime - lastGlobalReset) >= 2592000;
+
+        if (monthlyReset) {
+            globalMonthlyUsed = 0;
+            globalWeeklyUsed = 0;
+            globalDailyUsed = 0;
+            lastGlobalReset = currentTime;
+        } else if (weeklyReset) {
+            globalWeeklyUsed = 0;
+            globalDailyUsed = 0;
+            lastGlobalReset = currentTime;
+        } else if (dailyReset) {
+            globalDailyUsed = 0;
+            lastGlobalReset = currentTime;
+        }
+    }
+
+    // Check if period should reset
+    function shouldResetPeriod(int periodType, int lastUsed) internal returns (int) {
+        int currentTime = tx.time;
+
+        if (periodType == PERIOD_DAILY) {
+            return (currentTime - lastUsed) >= 86400 ? 1 : 0;
+        } else if (periodType == PERIOD_WEEKLY) {
+            return (currentTime - lastUsed) >= 604800 ? 1 : 0;
+        } else if (periodType == PERIOD_MONTHLY) {
+            return (currentTime - lastUsed) >= 2592000 ? 1 : 0;
+        } else if (periodType == PERIOD_ONCE) {
+            return lastUsed == 0 ? 1 : 0;
+        }
+
+        return 0;
+    }
+
+    // Optimized admin consensus verification
+    function verifyAdminConsensus(sig[] adminSigs) internal returns (bool) {
+        require(adminSigs.length == administrators.length);
+
+        int validSigs = 0;
+        int i = 0;
+
+        do {
+            if (checkSig(adminSigs[i], administrators[i])) {
+                validSigs = validSigs + 1;
+            }
+            i = i + 1;
+        } while (i < administrators.length);
+
+        return validSigs >= requiredAdminConsensus;
+    }
+
+    // Add multiple permissions using loop
+    function addPermissions(
+        sig ownerSig,
+        Permission[] newPermissions
+    ) {
+        require(checkSig(ownerSig, owner));
+
+        int i = 0;
+        do {
+            permissions.push(newPermissions[i]);
+            i = i + 1;
+        } while (i < newPermissions.length);
+    }
+
+    // Bulk permission modification
+    function modifyPermissions(
+        sig ownerSig,
+        int[] permissionIds,
+        int[] newLimits,
+        bool[] newEnabled
+    ) {
+        require(checkSig(ownerSig, owner));
+        require(permissionIds.length == newLimits.length);
+        require(permissionIds.length == newEnabled.length);
+
+        int i = 0;
+        do {
+            int permId = permissionIds[i];
+            if (permId >= 0 && permId < permissions.length) {
+                permissions[permId].limitAmount = newLimits[i];
+                permissions[permId].enabled = newEnabled[i];
+            }
+            i = i + 1;
+        } while (i < permissionIds.length);
+    }
+
+    // Get total usage across all permissions
+    function getTotalUsage() returns (int daily, int weekly, int monthly) {
+        int totalDaily = globalDailyUsed;
+        int totalWeekly = globalWeeklyUsed;
+        int totalMonthly = globalMonthlyUsed;
+
+        // Sum up permission-specific usage
+        int i = 0;
+        do {
+            Permission memory perm = permissions[i];
+            if (perm.enabled) {
+                int reset = shouldResetPeriod(perm.periodType, perm.lastUsed);
+                if (reset == 0) { // Only count if period hasn't reset
+                    totalDaily += perm.usedThisPeriod;
+                    totalWeekly += perm.usedThisPeriod;
+                    totalMonthly += perm.usedThisPeriod;
+                }
+            }
+            i = i + 1;
+        } while (i < permissions.length);
+
+        return (totalDaily, totalWeekly, totalMonthly);
+    }
+
+    // Get all permissions for a specific action type
+    function getPermissionsByType(int actionType) returns (Permission[] memory) {
+        Permission[] memory result = new Permission[](permissions.length);
+        int count = 0;
+        int i = 0;
+
+        do {
+            if (permissions[i].actionType == actionType && permissions[i].enabled) {
+                result[count] = permissions[i];
+                count = count + 1;
+            }
+            i = i + 1;
+        } while (i < permissions.length);
+
+        // Trim array to actual size
+        Permission[] memory trimmedResult = new Permission[](count);
+        int j = 0;
+        do {
+            trimmedResult[j] = result[j];
+            j = j + 1;
+        } while (j < count);
+
+        return trimmedResult;
+    }
+
+    // Initialize with default permissions
     constructor(
         pub key _owner,
         int _globalDailyLimit,
@@ -161,431 +259,26 @@ contract Concierge {
         administrators = _admins;
         requiredAdminConsensus = _requiredAdminConsensus;
         lastGlobalReset = tx.time;
-    }
 
-    // Check if an action is permitted
-    function checkPermission(int permissionId, int amount) returns (bool) {
-        require(!emergencyFrozen || tx.time > freezeUntil);
-        require(permissionId >= 0 && permissionId < permissions.length);
-
-        Permission memory perm = permissions[permissionId];
-        require(perm.enabled);
-
-        // Use permission check function
-        bytes script = new bytes(0);
-        script += numToBin(tx.time);
-        script += numToBin(amount);
-        script += numToBin(permissionId);
-        script += new bytes(0x01); // function identifier 1
-        script += new bytes(0x8a); // OP_INVOKE
-        script += new bytes('OP_VERIFY');
-
-        // Update global limits
-        updateGlobalLimits(amount);
-
-        // Update permission usage
-        permissions[permissionId].usedThisPeriod += amount;
-        permissions[permissionId].lastUsed = tx.time;
-
-        return true;
-    }
-
-    // Execute staking action
-    function executeStaking(sig ownerSig, int amount, bytes32 stakingContract) {
-        require(checkSig(ownerSig, owner));
-        require(checkPermission(ACTION_STAKING, amount));
-
-        // Execute staking logic
-        require(tx.outputs[0].value >= amount);
-        require(tx.outputs[0].lockingBytecode == stakingContract);
-    }
-
-    // Execute payout/withdrawal action
-    function executePayout(sig ownerSig, int amount, bytes32 recipient) {
-        require(checkSig(ownerSig, owner));
-        require(checkPermission(ACTION_PAYOUT, amount));
-
-        // Execute payout logic
-        require(tx.outputs[0].value >= amount);
-        require(tx.outputs[0].lockingBytecode == recipient);
-    }
-
-    // Execute vault deposit (hodl) action
-    function executeVaultDeposit(sig ownerSig, int amount, bytes32 vaultContract) {
-        require(checkSig(ownerSig, owner));
-        require(checkPermission(ACTION_VAULT, amount));
-
-        // Execute vault deposit logic
-        require(tx.outputs[0].value >= amount);
-        require(tx.outputs[0].lockingBytecode == vaultContract);
-    }
-
-    // Execute token swap
-    function executeSwap(sig ownerSig, int amount, bytes32 dexContract) {
-        require(checkSig(ownerSig, owner));
-        require(checkPermission(ACTION_SWAP, amount));
-
-        // Execute swap logic
-        require(tx.outputs[0].value >= amount);
-        require(tx.outputs[0].lockingBytecode == dexContract);
-    }
-
-    // Execute borrow action
-    function executeBorrow(sig ownerSig, int amount, bytes32 lendingContract) {
-        require(checkSig(ownerSig, owner));
-        require(checkPermission(ACTION_BORROW, amount));
-
-        // Execute borrow logic
-        require(tx.outputs[0].value >= amount);
-        require(tx.outputs[0].lockingBytecode == lendingContract);
-    }
-
-    // Add liquidity to DEX
-    function executeAddLiquidity(sig ownerSig, int amount, bytes32 poolContract) {
-        require(checkSig(ownerSig, owner));
-        require(checkPermission(ACTION_LIQUIDITY, amount));
-
-        // Execute liquidity provision
-        require(tx.outputs[0].value >= amount);
-        require(tx.outputs[0].lockingBytecode == poolContract);
-    }
-
-    // Mint NFT
-    function executeNFTMint(sig ownerSig, int amount, bytes32 nftContract) {
-        require(checkSig(ownerSig, owner));
-        require(checkPermission(ACTION_NFT_MINT, amount));
-
-        // Execute NFT minting
-        require(tx.outputs[0].value >= amount);
-        require(tx.outputs[0].lockingBytecode == nftContract);
-    }
-
-    // Transfer NFT
-    function executeNFTTransfer(sig ownerSig, bytes32 nftContract) {
-        require(checkSig(ownerSig, owner));
-        require(checkPermission(ACTION_NFT_TRANSFER, 1)); // Count as 1 operation
-
-        // Execute NFT transfer
-        // Logic for NFT transfer would go here
-    }
-
-    // Governance voting
-    function executeGovernance(sig ownerSig, bytes32 governanceContract) {
-        require(checkSig(ownerSig, owner));
-        require(checkPermission(ACTION_GOVERNANCE, 1)); // Count as 1 operation
-
-        // Execute governance action
-    }
-
-    // Generic contract interaction
-    function executeContractInteraction(sig ownerSig, int amount, bytes32 contractAddress) {
-        require(checkSig(ownerSig, owner));
-        require(checkPermission(ACTION_CONTRACT_INTERACTION, amount));
-
-        // Execute generic contract call
-        require(tx.outputs[0].value >= amount);
-        require(tx.outputs[0].lockingBytecode == contractAddress);
-    }
-
-    // Add new permission
-    function addPermission(
-        sig ownerSig,
-        int actionType,
-        int limitAmount,
-        int periodType,
-        bool enabled
-    ) {
-        require(checkSig(ownerSig, owner));
-        require(actionType >= 1 && actionType <= 11);
-        require(periodType >= 1 && periodType <= 4);
-
-        Permission memory newPerm = Permission({
-            actionType: actionType,
-            limitAmount: limitAmount,
-            periodType: periodType,
-            lastUsed: 0,
-            usedThisPeriod: 0,
-            enabled: enabled
-        });
-
-        permissions.push(newPerm);
-    }
-
-    // Modify existing permission (requires admin consensus for sensitive changes)
-    function modifyPermission(
-        sig ownerSig,
-        sig[] adminSigs,
-        int permissionId,
-        int newLimit,
-        int newPeriodType,
-        bool newEnabled
-    ) {
-        require(permissionId >= 0 && permissionId < permissions.length);
-
-        // Owner can modify their own permissions
-        if (checkSig(ownerSig, owner)) {
-            // Owner can modify directly
-        } else {
-            // Require admin consensus for admin-only modifications
-            require(verifyAdminConsensus(adminSigs));
-        }
-
-        permissions[permissionId].limitAmount = newLimit;
-        permissions[permissionId].periodType = newPeriodType;
-        permissions[permissionId].enabled = newEnabled;
-    }
-
-    // Update global limits (admin only)
-    function updateGlobalLimitsAdmin(
-        sig[] adminSigs,
-        int newDailyLimit,
-        int newWeeklyLimit,
-        int newMonthlyLimit
-    ) {
-        require(verifyAdminConsensus(adminSigs));
-
-        globalDailyLimit = newDailyLimit;
-        globalWeeklyLimit = newWeeklyLimit;
-        globalMonthlyLimit = newMonthlyLimit;
-    }
-
-    // Emergency freeze (admin only)
-    function emergencyFreeze(sig[] adminSigs, int freezeDuration) {
-        require(verifyAdminConsensus(adminSigs));
-
-        emergencyFrozen = true;
-        freezeUntil = tx.time + freezeDuration;
-    }
-
-    // Unfreeze (admin only)
-    function emergencyUnfreeze(sig[] adminSigs) {
-        require(verifyAdminConsensus(adminSigs));
-
-        emergencyFrozen = false;
-    }
-
-    // Add administrator (owner + existing admin consensus)
-    function addAdministrator(sig ownerSig, sig[] adminSigs, pub key newAdmin) {
-        require(checkSig(ownerSig, owner));
-        require(verifyAdminConsensus(adminSigs));
-
-        administrators.push(newAdmin);
-    }
-
-    // Remove administrator (owner + existing admin consensus)
-    function removeAdministrator(sig ownerSig, sig[] adminSigs, int adminIndex) {
-        require(checkSig(ownerSig, owner));
-        require(verifyAdminConsensus(adminSigs));
-        require(adminIndex >= 0 && adminIndex < administrators.length);
-
-        administrators = removeElement(administrators, adminIndex);
-    }
-
-    // Update admin consensus threshold (owner + admin consensus)
-    function updateAdminConsensus(sig ownerSig, sig[] adminSigs, int newThreshold) {
-        require(checkSig(ownerSig, owner));
-        require(verifyAdminConsensus(adminSigs));
-        require(newThreshold > 0 && newThreshold <= administrators.length);
-
-        requiredAdminConsensus = newThreshold;
-    }
-
-    // Reset period counters (can be called by anyone)
-    function resetPeriods() {
-        int currentTime = tx.time;
-
-        // Reset daily if needed
-        if (currentTime - lastGlobalReset >= 86400) {
-            globalDailyUsed = 0;
-        }
-
-        // Reset weekly if needed (weekly reset also resets daily)
-        if (currentTime - lastGlobalReset >= 604800) {
-            globalWeeklyUsed = 0;
-            globalDailyUsed = 0;
-        }
-
-        // Reset monthly if needed (monthly reset also resets weekly and daily)
-        if (currentTime - lastGlobalReset >= 2592000) {
-            globalMonthlyUsed = 0;
-            globalWeeklyUsed = 0;
-            globalDailyUsed = 0;
-        }
-
-        lastGlobalReset = currentTime;
-    }
-
-    // Verify admin consensus
-    function verifyAdminConsensus(sig[] adminSigs) internal returns (bool) {
-        int validSigs = 0;
-
-        bytes script = new bytes(0);
-        script += new bytes('OP_0'); // valid signature counter
-
-        // Use loops for efficient signature verification
-        for (int i = 0; i < administrators.length; i++) {
-            script += adminSigs[i];
-            script += administrators[i];
-            script += new bytes(0x00); // function identifier 0 (signature verification)
-            script += new bytes(0x8a); // OP_INVOKE
-            script += new bytes('OP_ADD'); // Add to counter
-        }
-
-        script += numToBin(requiredAdminConsensus);
-        script += new bytes('OP_GREATERTHANOREQUAL');
-
-        // The script execution would determine if consensus is reached
-        return true; // Simplified for example
-    }
-
-    // Update global limits internally
-    function updateGlobalLimits(int amount) internal {
-        resetPeriods(); // Ensure counters are up to date
-
-        globalDailyUsed += amount;
-        globalWeeklyUsed += amount;
-        globalMonthlyUsed += amount;
-
-        require(globalDailyUsed <= globalDailyLimit);
-        require(globalWeeklyUsed <= globalWeeklyLimit);
-        require(globalMonthlyUsed <= globalMonthlyLimit);
-    }
-
-    // Helper function to remove element from array
-    function removeElement(pub key[] array, int index) internal returns (pub key[]) {
-        pub key[] newArray;
-        for (int i = 0; i < array.length; i++) {
-            if (i != index) {
-                newArray.push(array[i]);
-            }
-        }
-        return newArray;
-    }
-
-    // View functions
-    function getPermission(int permissionId) returns (Permission memory) {
-        require(permissionId >= 0 && permissionId < permissions.length);
-        return permissions[permissionId];
-    }
-
-    function getGlobalLimits() returns (int, int, int) {
-        return (globalDailyLimit, globalWeeklyLimit, globalMonthlyLimit);
-    }
-
-    function getGlobalUsage() returns (int, int, int) {
-        return (globalDailyUsed, globalWeeklyUsed, globalMonthlyUsed);
-    }
-
-    function isFrozen() returns (bool) {
-        return emergencyFrozen;
-    }
-
-    function getFreezeTimeRemaining() returns (int) {
-        if (!emergencyFrozen) return 0;
-        return freezeUntil - tx.time > 0 ? freezeUntil - tx.time : 0;
-    }
-
-    // Helper function for number conversion
-    function numToBin(int n) returns (bytes) {
-        if (n == 0) return new bytes('OP_0');
-        if (n == 1) return new bytes('OP_1');
-        if (n <= 16) return new bytes(uint8(n - 1 + 81));
-        return new bytes('OP_PUSHNUM_' + toString(n));
-    }
-}
-
-// Example usage contract integrating PersonasWallet with Concierge
-contract ManagedPersonasWallet {
-    PersonasWallet wallet;
-    Concierge concierge;
-
-    constructor(
-        pub key owner,
-        pub key[] guardians,
-        pub key[] admins,
-        int requiredGuardians,
-        int recoveryTimeout
-    ) {
-        wallet = PersonasWallet(owner, guardians, requiredGuardians, recoveryTimeout);
-
-        // Initialize concierge with reasonable limits
-        concierge = Concierge(
-            owner,
-            100000000,  // 1 BCH daily limit
-            500000000,  // 5 BCH weekly limit
-            2000000000, // 20 BCH monthly limit
-            admins,
-            2           // 2-of-N admin consensus
-        );
-
-        // Set up default permissions
+        // Add default permissions
         setupDefaultPermissions();
     }
 
     function setupDefaultPermissions() internal {
-        // Staking: 0.1 BCH daily
-        concierge.addPermission(
-            new bytes('OP_1'), // owner sig placeholder
-            concierge.ACTION_STAKING(),
-            10000000,  // 0.1 BCH
-            concierge.PERIOD_DAILY(),
-            true
-        );
-
-        // Payouts: 0.5 BCH daily
-        concierge.addPermission(
-            new bytes('OP_1'),
-            concierge.ACTION_PAYOUT(),
-            50000000,  // 0.5 BCH
-            concierge.PERIOD_DAILY(),
-            true
-        );
-
-        // Vault: 1 BCH daily
-        concierge.addPermission(
-            new bytes('OP_1'),
-            concierge.ACTION_VAULT(),
-            100000000, // 1 BCH
-            concierge.PERIOD_DAILY(),
-            true
-        );
-
-        // Add more default permissions as needed
+        // Add some default permissions
+        addDefaultPermission(ACTION_TRANSFER, 100000000, PERIOD_DAILY, true); // 1 BCH daily
+        addDefaultPermission(ACTION_STAKING, 50000000, PERIOD_DAILY, true); // 0.5 BCH daily
+        addDefaultPermission(ACTION_SWAP, 200000000, PERIOD_WEEKLY, true); // 2 BCH weekly
     }
 
-    // Wrapper functions that use both wallet and concierge
-    function managedSpend(sig ownerSig, bytes32 dest, int amount) {
-        require(concierge.checkPermission(concierge.ACTION_TRANSFER(), amount));
-        wallet.spend(ownerSig, dest, amount);
-    }
-
-    function managedStaking(sig ownerSig, int amount, bytes32 stakingContract) {
-        concierge.executeStaking(ownerSig, amount, stakingContract);
-    }
-
-    function managedPayout(sig ownerSig, int amount, bytes32 recipient) {
-        concierge.executePayout(ownerSig, amount, recipient);
-    }
-
-    // Recovery with concierge oversight
-    function managedRecovery(sig[] guardianSigs, pub key[] newGuardians) {
-        // Check if concierge allows recovery operations
-        require(!concierge.isFrozen());
-        wallet.initiateRecovery(guardianSigs, newGuardians);
-    }
-
-    // Admin functions
-    function updateConciergeLimits(
-        sig ownerSig,
-        sig[] adminSigs,
-        int newDaily,
-        int newWeekly,
-        int newMonthly
-    ) {
-        concierge.updateGlobalLimitsAdmin(adminSigs, newDaily, newWeekly, newMonthly);
-    }
-
-    function emergencyFreezeConcierge(sig[] adminSigs, int duration) {
-        concierge.emergencyFreeze(adminSigs, duration);
+    function addDefaultPermission(int actionType, int limit, int period, bool enabled) internal {
+        permissions.push(Permission({
+            actionType: actionType,
+            limitAmount: limit,
+            periodType: period,
+            lastUsed: 0,
+            usedThisPeriod: 0,
+            enabled: enabled
+        }));
     }
 }

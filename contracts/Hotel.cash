@@ -20,6 +20,7 @@ pragma cashscript ^0.9.0;
  *
  * Copyright (c) 2025 0xShomari. All rights reserved.
  */
+
 contract Hotel {
     // Factory owner
     pub key factoryOwner;
@@ -50,9 +51,6 @@ contract Hotel {
         int weeklyLimit;
         int monthlyLimit;
         int adminConsensus;
-        bool includeStaking;
-        bool includeNFT;
-        bool includeDeFi;
     }
 
     Preset[] presets;
@@ -65,50 +63,6 @@ contract Hotel {
     // Admin keys for factory management
     pub key[] factoryAdmins;
     int requiredFactoryConsensus;
-
-    // Define reusable functions using OP_DEFINE
-    bytes deploymentValidationFunction =
-        new bytes(0x00) + // function identifier 0
-        new bytes(
-            // Validate deployment configuration
-            // Takes: presetId, customConfig
-            // Returns: validated limits
-            'OP_DUP ' +
-            'OP_0 OP_GREATERTHANOREQUAL ' +
-            'OP_VERIFY ' +
-            'OP_DUP ' +
-            'OP_4 OP_PICK ' + // Get presets length
-            'OP_LESSTHAN ' +
-            'OP_VERIFY ' +
-            'OP_DUP ' +
-            'OP_5 OP_PICK ' + // Get preset
-            'OP_SWAP ' +
-            'OP_PICK ' + // Get preset config
-            'OP_1 ' + // Success
-        ) +
-        new bytes(0x89) + // OP_DEFINE
-        new bytes(0x00);  // function identifier
-
-    bytes feeCollectionFunction =
-        new bytes(0x01) + // function identifier 1
-        new bytes(
-            // Collect and verify deployment fee
-            // Takes: feeAmount
-            // Returns: success
-            'OP_DUP ' +
-            'OP_0 OP_GREATERTHAN ' +
-            'OP_IF ' +
-            'OP_DUP ' +
-            'OP_1 OP_PICK ' + // Get expected fee
-            'OP_LESSTHANOREQUAL ' +
-            'OP_VERIFY ' +
-            'OP_1 ' +
-            'OP_ELSE ' +
-            'OP_1 ' + // No fee required
-            'OP_ENDIF '
-        ) +
-        new bytes(0x89) + // OP_DEFINE
-        new bytes(0x01);  // function identifier
 
     // Constructor
     constructor(
@@ -123,87 +77,61 @@ contract Hotel {
         requiredFactoryConsensus = _requiredConsensus;
         templateVersion = 1;
 
-        // Initialize with default presets
         initializePresets();
         initializeTemplates();
     }
 
-    // Initialize default configuration presets
-    function initializePresets() internal {
-        // Personal Wallet Preset
-        presets.push(Preset({
-            name: "personal",
-            dailyLimit: 50000000,    // 0.5 BCH
-            weeklyLimit: 250000000,  // 2.5 BCH
-            monthlyLimit: 1000000000, // 10 BCH
-            adminConsensus: 1,
-            includeStaking: true,
-            includeNFT: true,
-            includeDeFi: false
-        }));
+    // Bulk deployment with optimized loops
+    function deployMultipleContracts(
+        int[] presetIds,
+        pub key[] owners,
+        pub key[][] adminsList,
+        int templateId
+    ) returns (bytes32[] memory) {
+        require(presetIds.length == owners.length);
+        require(presetIds.length == adminsList.length);
 
-        // Business Wallet Preset
-        presets.push(Preset({
-            name: "business",
-            dailyLimit: 500000000,    // 5 BCH
-            weeklyLimit: 2500000000,  // 25 BCH
-            monthlyLimit: 10000000000, // 100 BCH
-            adminConsensus: 2,
-            includeStaking: true,
-            includeNFT: true,
-            includeDeFi: true
-        }));
+        bytes32[] memory contractAddresses = new bytes32[](presetIds.length);
+        int i = 0;
 
-        // Institutional Preset
-        presets.push(Preset({
-            name: "institutional",
-            dailyLimit: 5000000000,    // 50 BCH
-            weeklyLimit: 25000000000,  // 250 BCH
-            monthlyLimit: 100000000000, // 1000 BCH
-            adminConsensus: 3,
-            includeStaking: true,
-            includeNFT: false,
-            includeDeFi: true
-        }));
+        do {
+            contractAddresses[i] = deployConcierge(
+                presetIds[i],
+                owners[i],
+                adminsList[i],
+                new bytes(0),
+                templateId
+            );
+            i = i + 1;
+        } while (i < presetIds.length);
 
-        // DeFi Enthusiast Preset
-        presets.push(Preset({
-            name: "defi",
-            dailyLimit: 100000000,    // 1 BCH
-            weeklyLimit: 500000000,   // 5 BCH
-            monthlyLimit: 2000000000, // 20 BCH
-            adminConsensus: 1,
-            includeStaking: true,
-            includeNFT: true,
-            includeDeFi: true
-        }));
-
-        // NFT Collector Preset
-        presets.push(Preset({
-            name: "nft",
-            dailyLimit: 100000000,    // 1 BCH
-            weeklyLimit: 500000000,   // 5 BCH
-            monthlyLimit: 2000000000, // 20 BCH
-            adminConsensus: 1,
-            includeStaking: false,
-            includeNFT: true,
-            includeDeFi: false
-        }));
+        return contractAddresses;
     }
 
-    // Initialize template scripts
-    function initializeTemplates() internal {
-        // Template 0: Basic Concierge
-        templateScripts.push(compileBasicConcierge());
-        templateHashes.push(sha256(templateScripts[templateScripts.length - 1]));
+    // Get deployment statistics with optimized counting
+    function getDeploymentStats() returns (
+        int total,
+        int active,
+        int inactive,
+        int recentDeployments
+    ) {
+        total = totalDeployments;
+        active = activeDeployments;
+        inactive = totalDeployments - activeDeployments;
 
-        // Template 1: Advanced Concierge with DeFi
-        templateScripts.push(compileAdvancedConcierge());
-        templateHashes.push(sha256(templateScripts[templateScripts.length - 1]));
+        // Count recent deployments (last 30 days)
+        int recentCount = 0;
+        int thirtyDaysAgo = tx.time - 2592000;
+        int i = 0;
 
-        // Template 2: Institutional Concierge
-        templateScripts.push(compileInstitutionalConcierge());
-        templateHashes.push(sha256(templateScripts[templateScripts.length - 1]));
+        do {
+            if (deployments[i].deploymentTime >= thirtyDaysAgo) {
+                recentCount = recentCount + 1;
+            }
+            i = i + 1;
+        } while (i < deployments.length);
+
+        return (total, active, inactive, recentCount);
     }
 
     // Deploy a new Concierge contract
@@ -214,9 +142,8 @@ contract Hotel {
         bytes customConfig,
         int templateId
     ) returns (bytes32) {
-        // Validate inputs
         require(templateId >= 0 && templateId < templateScripts.length);
-        require(presetId >= -1 && presetId < presets.length); // -1 for custom
+        require(presetId >= -1 && presetId < presets.length);
 
         // Collect deployment fee
         require(collectDeploymentFee());
@@ -229,19 +156,8 @@ contract Hotel {
             config = parseCustomConfig(customConfig);
         }
 
-        // Validate configuration
-        bytes validationScript = new bytes(0);
-        validationScript += customConfig;
-        validationScript += numToBin(presetId);
-        validationScript += new bytes(0x00); // function identifier 0
-        validationScript += new bytes(0x8a); // OP_INVOKE
-        validationScript += new bytes('OP_VERIFY');
-
-        // Select template
-        bytes memory template = templateScripts[templateId];
-
-        // Deploy contract (this would be the actual deployment logic)
-        bytes32 contractAddress = deployContract(template, owner, admins, config);
+        // Deploy contract
+        bytes32 contractAddress = deployContract(templateScripts[templateId], owner, admins, config);
 
         // Record deployment
         deployments.push(Deployment({
@@ -258,222 +174,145 @@ contract Hotel {
         return contractAddress;
     }
 
-    // Deploy Concierge integrated with PersonasWallet
-    function deployManagedWallet(
-        int presetId,
-        pub key owner,
-        pub key[] guardians,
-        pub key[] admins,
-        int requiredGuardians,
-        int recoveryTimeout,
-        bytes customConfig,
-        int templateId
-    ) returns (bytes32) {
-        // Validate inputs
-        require(templateId >= 0 && templateId < templateScripts.length);
-        require(requiredGuardians > 0 && requiredGuardians <= guardians.length);
-
-        // Collect deployment fee
-        require(collectDeploymentFee());
-
-        // Get configuration
-        Preset memory config;
-        if (presetId >= 0) {
-            config = presets[presetId];
-        } else {
-            config = parseCustomConfig(customConfig);
-        }
-
-        // Deploy ManagedPersonasWallet
-        bytes32 contractAddress = deployManagedWalletContract(
-            owner,
-            guardians,
-            admins,
-            requiredGuardians,
-            recoveryTimeout,
-            config,
-            templateId
-        );
-
-        // Record deployment
-        deployments.push(Deployment({
-            contractAddress: contractAddress,
-            owner: owner,
-            deploymentTime: tx.time,
-            configHash: sha256(customConfig),
-            active: true
-        }));
-
-        totalDeployments += 1;
-        activeDeployments += 1;
-
-        return contractAddress;
-    }
-
-    // Upgrade template (factory admin only)
-    function upgradeTemplate(
+    // Bulk template management
+    function updateTemplates(
         sig[] adminSigs,
-        bytes newTemplate,
-        int newTemplateId
+        bytes[] newTemplates
     ) {
         require(verifyFactoryConsensus(adminSigs));
-        require(newTemplateId >= 0);
 
-        // Add or update template
-        if (newTemplateId < templateScripts.length) {
-            templateScripts[newTemplateId] = newTemplate;
-        } else {
-            templateScripts.push(newTemplate);
-            templateHashes.push(sha256(newTemplate));
-        }
+        // Clear existing templates
+        templateScripts.length = 0;
+        templateHashes.length = 0;
+
+        // Add new templates using loop
+        int i = 0;
+        do {
+            templateScripts.push(newTemplates[i]);
+            templateHashes.push(sha256(newTemplates[i]));
+            i = i + 1;
+        } while (i < newTemplates.length);
 
         templateVersion += 1;
     }
 
-    // Add new preset (factory admin only)
-    function addPreset(
+    // Mass deactivation of deployments
+    function deactivateMultipleDeployments(
         sig[] adminSigs,
-        string name,
-        int dailyLimit,
-        int weeklyLimit,
-        int monthlyLimit,
-        int adminConsensus,
-        bool includeStaking,
-        bool includeNFT,
-        bool includeDeFi
+        int[] deploymentIds
     ) {
         require(verifyFactoryConsensus(adminSigs));
 
-        presets.push(Preset({
-            name: name,
-            dailyLimit: dailyLimit,
-            weeklyLimit: weeklyLimit,
-            monthlyLimit: monthlyLimit,
-            adminConsensus: adminConsensus,
-            includeStaking: includeStaking,
-            includeNFT: includeNFT,
-            includeDeFi: includeDeFi
-        }));
+        int deactivatedCount = 0;
+        int i = 0;
+
+        do {
+            int depId = deploymentIds[i];
+            if (depId >= 0 && depId < deployments.length && deployments[depId].active) {
+                deployments[depId].active = false;
+                deactivatedCount = deactivatedCount + 1;
+            }
+            i = i + 1;
+        } while (i < deploymentIds.length);
+
+        activeDeployments = activeDeployments - deactivatedCount;
     }
 
-    // Update deployment fee (factory owner or admin consensus)
-    function updateDeploymentFee(sig ownerSig, sig[] adminSigs, int newFee) {
-        if (checkSig(ownerSig, factoryOwner)) {
-            deploymentFee = newFee;
-        } else {
-            require(verifyFactoryConsensus(adminSigs));
-            deploymentFee = newFee;
-        }
-    }
+    // Find deployments by owner with optimized search
+    function findDeploymentsByOwner(pub key ownerAddr) returns (int[] memory) {
+        int[] memory ownerDeployments = new int[](deployments.length);
+        int count = 0;
+        int i = 0;
 
-    // Withdraw collected fees (factory owner only)
-    function withdrawFees(sig ownerSig, bytes32 recipient, int amount) {
-        require(checkSig(ownerSig, factoryOwner));
-        require(amount <= totalFeesCollected);
+        do {
+            if (deployments[i].owner == ownerAddr && deployments[i].active) {
+                ownerDeployments[count] = i;
+                count = count + 1;
+            }
+            i = i + 1;
+        } while (i < deployments.length);
 
-        totalFeesCollected -= amount;
+        // Trim the array to actual size
+        int[] memory result = new int[](count);
+        int j = 0;
+        do {
+            result[j] = ownerDeployments[j];
+            j = j + 1;
+        } while (j < count);
 
-        // Transfer fees
-        require(tx.outputs[0].value >= amount);
-        require(tx.outputs[0].lockingBytecode == recipient);
-    }
-
-    // Deactivate deployment (owner or factory admin)
-    function deactivateDeployment(
-        sig ownerSig,
-        sig[] adminSigs,
-        int deploymentId
-    ) {
-        require(deploymentId >= 0 && deploymentId < deployments.length);
-
-        bool authorized = false;
-
-        // Check if caller is deployment owner
-        if (checkSig(ownerSig, deployments[deploymentId].owner)) {
-            authorized = true;
-        }
-        // Check if factory admin
-        else if (verifyFactoryConsensus(adminSigs)) {
-            authorized = true;
-        }
-
-        require(authorized);
-
-        deployments[deploymentId].active = false;
-        activeDeployments -= 1;
-    }
-
-    // Get deployment info
-    function getDeployment(int deploymentId) returns (Deployment memory) {
-        require(deploymentId >= 0 && deploymentId < deployments.length);
-        return deployments[deploymentId];
-    }
-
-    // Get preset info
-    function getPreset(int presetId) returns (Preset memory) {
-        require(presetId >= 0 && presetId < presets.length);
-        return presets[presetId];
-    }
-
-    // Get template
-    function getTemplate(int templateId) returns (bytes memory) {
-        require(templateId >= 0 && templateId < templateScripts.length);
-        return templateScripts[templateId];
-    }
-
-    // Factory statistics
-    function getStats() returns (int, int, int, int) {
-        return (totalDeployments, activeDeployments, totalFeesCollected, templateVersion);
+        return result;
     }
 
     // Internal functions
-
     function collectDeploymentFee() internal returns (bool) {
         if (deploymentFee > 0) {
-            bytes feeScript = new bytes(0);
-            feeScript += numToBin(deploymentFee);
-            feeScript += new bytes(0x01); // function identifier 1
-            feeScript += new bytes(0x8a); // OP_INVOKE
-            feeScript += new bytes('OP_VERIFY');
-
+            // Fee collection logic would go here
             totalFeesCollected += deploymentFee;
             return true;
         }
-        return true; // No fee required
+        return true;
     }
 
     function verifyFactoryConsensus(sig[] adminSigs) internal returns (bool) {
+        require(adminSigs.length == factoryAdmins.length);
+
         int validSigs = 0;
+        int i = 0;
 
-        bytes script = new bytes(0);
-        script += new bytes('OP_0'); // valid signature counter
+        do {
+            if (checkSig(adminSigs[i], factoryAdmins[i])) {
+                validSigs = validSigs + 1;
+            }
+            i = i + 1;
+        } while (i < factoryAdmins.length);
 
-        for (int i = 0; i < factoryAdmins.length; i++) {
-            script += adminSigs[i];
-            script += factoryAdmins[i];
-            script += new bytes(0x00); // function identifier 0 (signature verification)
-            script += new bytes(0x8a); // OP_INVOKE
-            script += new bytes('OP_ADD');
-        }
+        return validSigs >= requiredFactoryConsensus;
+    }
 
-        script += numToBin(requiredFactoryConsensus);
-        script += new bytes('OP_GREATERTHANOREQUAL');
+    function initializePresets() internal {
+        // Personal Wallet Preset
+        presets.push(Preset({
+            name: "personal",
+            dailyLimit: 50000000,
+            weeklyLimit: 250000000,
+            monthlyLimit: 1000000000,
+            adminConsensus: 1
+        }));
 
-        return true; // Simplified for example
+        // Business Wallet Preset
+        presets.push(Preset({
+            name: "business",
+            dailyLimit: 500000000,
+            weeklyLimit: 2500000000,
+            monthlyLimit: 10000000000,
+            adminConsensus: 2
+        }));
+
+        // Institutional Preset
+        presets.push(Preset({
+            name: "institutional",
+            dailyLimit: 5000000000,
+            weeklyLimit: 25000000000,
+            monthlyLimit: 100000000000,
+            adminConsensus: 3
+        }));
+    }
+
+    function initializeTemplates() internal {
+        templateScripts.push(compileBasicConcierge());
+        templateHashes.push(sha256(templateScripts[templateScripts.length - 1]));
+
+        templateScripts.push(compileAdvancedConcierge());
+        templateHashes.push(sha256(templateScripts[templateScripts.length - 1]));
     }
 
     function parseCustomConfig(bytes config) internal returns (Preset memory) {
-        // Parse custom configuration from bytes
-        // This would extract limits and settings from the custom config
         return Preset({
             name: "custom",
-            dailyLimit: 100000000,    // Default 1 BCH
-            weeklyLimit: 500000000,   // Default 5 BCH
-            monthlyLimit: 2000000000, // Default 20 BCH
-            adminConsensus: 1,
-            includeStaking: true,
-            includeNFT: true,
-            includeDeFi: true
+            dailyLimit: 100000000,
+            weeklyLimit: 500000000,
+            monthlyLimit: 2000000000,
+            adminConsensus: 1
         });
     }
 
@@ -483,121 +322,15 @@ contract Hotel {
         pub key[] admins,
         Preset config
     ) internal returns (bytes32) {
-        // This would contain the actual contract deployment logic
-        // For now, return a hash representing the deployed contract
-        bytes memory deploymentData = template + owner + admins + numToBin(config.dailyLimit);
+        bytes memory deploymentData = template + owner + admins;
         return sha256(deploymentData);
     }
 
-    function deployManagedWalletContract(
-        pub key owner,
-        pub key[] guardians,
-        pub key[] admins,
-        int requiredGuardians,
-        int recoveryTimeout,
-        Preset config,
-        int templateId
-    ) internal returns (bytes32) {
-        // Deploy ManagedPersonasWallet with Concierge integration
-        bytes memory deploymentData =
-            templateScripts[templateId] +
-            owner +
-            guardians +
-            admins +
-            numToBin(requiredGuardians) +
-            numToBin(recoveryTimeout) +
-            numToBin(config.dailyLimit);
-
-        return sha256(deploymentData);
-    }
-
-    // Template compilation functions (simplified)
     function compileBasicConcierge() internal returns (bytes memory) {
-        // Basic Concierge template without advanced features
         return new bytes('BASIC_CONCIERGE_TEMPLATE');
     }
 
     function compileAdvancedConcierge() internal returns (bytes memory) {
-        // Advanced Concierge with DeFi integrations
         return new bytes('ADVANCED_CONCIERGE_TEMPLATE');
-    }
-
-    function compileInstitutionalConcierge() internal returns (bytes memory) {
-        // Institutional-grade Concierge with enhanced security
-        return new bytes('INSTITUTIONAL_CONCIERGE_TEMPLATE');
-    }
-
-    // Helper function for number conversion
-    function numToBin(int n) returns (bytes) {
-        if (n == 0) return new bytes('OP_0');
-        if (n == 1) return new bytes('OP_1');
-        if (n <= 16) return new bytes(uint8(n - 1 + 81));
-        return new bytes('OP_PUSHNUM_' + toString(n));
-    }
-}
-
-// Example usage: Deploying a managed wallet
-contract HotelUser {
-    Hotel factory;
-
-    constructor(pub key factoryOwner) {
-        // Initialize with existing factory
-        // In practice, this would be a known factory address
-        factory = Hotel(factoryOwner);
-    }
-
-    function createPersonalWallet(
-        pub key owner,
-        pub key[] guardians,
-        pub key[] admins
-    ) returns (bytes32) {
-        // Deploy a personal wallet with default preset
-        return factory.deployManagedWallet(
-            0, // personal preset
-            owner,
-            guardians,
-            admins,
-            2, // 2-of-N guardians required
-            144, // 1 day recovery timeout
-            new bytes(0), // No custom config
-            0  // Basic template
-        );
-    }
-
-    function createBusinessWallet(
-        pub key owner,
-        pub key[] guardians,
-        pub key[] admins,
-        bytes customConfig
-    ) returns (bytes32) {
-        // Deploy a business wallet with custom configuration
-        return factory.deployManagedWallet(
-            -1, // custom preset
-            owner,
-            guardians,
-            admins,
-            3, // 3-of-N guardians required
-            288, // 2 day recovery timeout
-            customConfig,
-            1  // Advanced template
-        );
-    }
-
-    function createInstitutionalWallet(
-        pub key owner,
-        pub key[] guardians,
-        pub key[] admins
-    ) returns (bytes32) {
-        // Deploy an institutional wallet
-        return factory.deployManagedWallet(
-            2, // institutional preset
-            owner,
-            guardians,
-            admins,
-            5, // 5-of-N guardians required
-            432, // 3 day recovery timeout
-            new bytes(0), // No custom config
-            2  // Institutional template
-        );
     }
 }
