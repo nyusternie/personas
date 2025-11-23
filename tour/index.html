@@ -16,6 +16,91 @@
     <!-- Optional - CSS SVG Icons (Font Awesome) -->
     <link rel="stylesheet" type="text/css" media="all" href="./assets/css/svg-icons.css">
 
+    <style>
+        .rounded-image {
+            border-radius: 20px;
+        }
+        .qr-cash {
+            border-radius: 12px;
+            border: 4px solid #00aaff;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            max-width: 240px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .qr-cash:hover {
+            transform: scale(1.05);
+        }
+        .qr-token {
+            border-radius: 12px;
+            border: 4px solid #ff6b35;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            max-width: 240px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .qr-token:hover {
+            transform: scale(1.05);
+        }
+        .emoji-large {
+            font-size: 8rem;
+            line-height: 1;
+            margin: 1rem 0;
+            display: block;
+        }
+        .qr-label {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            display: block;
+            white-space: nowrap;
+            text-align: center;
+        }
+        .qr-container {
+            margin: 0.5rem 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .scan-instruction {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin: 0.3rem 0 1rem 0;
+            text-align: center;
+        }
+        .explorer-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #2c5aa0;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.2s ease;
+            border: 2px solid #1e3a5f;
+            margin: 0.3rem 0;
+        }
+        .explorer-button:hover {
+            background: #1e3a5f;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            color: white;
+        }
+        .address-buttons {
+            display: flex;
+            justify-content: center;
+            margin: 0.5rem 0;
+        }
+        .button-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 0.5rem;
+        }
+    </style>
+
     <!-- SOCIAL CARDS -->
     <meta property="og:url" content="https://tour.personas.cash">
     <meta property="og:type" content="article">
@@ -46,7 +131,7 @@
         <p class="logo"><a href="../index.html" title="Personas">Personas</a></p>
         <ul>
             <li class="github">
-                <a rel="external" href="https://github.com/shomariimani/personas" title="GitHub" target="_blank">
+                <a rel="external" href="https://github.com/nyusternie/personas" title="GitHub" target="_blank">
                     <svg class="fa-github">
                         <use xlink:href="#fa-github"></use>
                     </svg>
@@ -72,7 +157,7 @@
         <section class="bg-gradient-v aligncenter">
             <div class="wrap">
                 <h1 class="text-landing">Personas</h1>
-                <p class="text-symbols">🤖</p>
+                <span class="emoji-large">🤖</span>
                 <p class="text-intro">Live Your Digital Cash Life</p>
                 <p class="text-subtitle">AI-powered autonomous agents for effortless Bitcoin Cash living</p>
                 <p>
@@ -106,7 +191,7 @@
                     </div>
                     <div class="column">
                         <figure>
-                            <img src="./assets/images/ai-assistant-demo.png" alt="AI Assistant Demo">
+                            <img src="./assets/images/banners/a-new-way-to-live-with-money.webp" alt="AI Assistant Demo" class="rounded-image">
                         </figure>
                     </div>
                 </div>
@@ -263,37 +348,56 @@
         <!-- Slide 7: Support the Vision -->
         <section class="bg-green aligncenter">
             <div class="wrap">
-                <h2 class="text-landing">Fuel the Future of Digital Living</h2>
-                <p class="text-intro">Help us build the autonomous financial future everyone can enjoy</p>
+                <h2 class="text-landing">💖 Fuel Our Mission</h2>
+                <p class="text-intro">Join the revolution! Send EMBERs to power the future of autonomous finance 🚀</p>
 
-                <div class="grid vertical-align">
-                    <div class="column">
-                        <div class="content-center">
-                            <h3>💎 Support with EMBERs</h3>
-                            <p>Your support helps bring effortless digital cash living to millions</p>
-                            <figure>
-                                <img src="https://i.ibb.co/DPqh49hT/qrcode-qpq8yv3w69474fjmcr2cw7qt729rklx0muzp2vs79j.png" alt="Send EMBERs" style="max-width: 280px; border: 3px solid #fff; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
-                                <figcaption><strong>Scan to Support Innovation</strong></figcaption>
-                            </figure>
-                        </div>
-                    </div>
-                    <div class="column">
-                        <div class="content-center">
-                            <h4>Bitcoin Cash Address</h4>
-                            <div class="bg-white shadow" style="padding: 1.5rem; border-radius: 12px; margin: 2rem 0;">
-                                <p class="text-data" style="font-family: monospace; font-size: 1rem; word-break: break-all; background: #f8f9fa; padding: 1rem; border-radius: 8px;">
-                                    bitcoincash:qpq8yv3w69474fjmcr2cw7qt729rklx0muzp2vs79j
-                                </p>
+                <div class="content-center">
+                    <p class="scan-instruction">📱 Scan to Fuel Innovation w/ BCH or EMBERs</p>
+
+                    <div class="grid vertical-align">
+                        <div class="column">
+                            <div class="qr-container">
+                                <p class="qr-label">💵 Cash Address (BCH)</p>
+                                <a href="bitcoin:qpq8yv3w69474fjmcr2cw7qt729rklx0muzp2vs79j" title="Send BCH">
+                                    <img src="https://i.ibb.co/DPqh49hT/qrcode-qpq8yv3w69474fjmcr2cw7qt729rklx0muzp2vs79j.png" alt="Send EMBERs - Cash Address" class="qr-cash">
+                                </a>
                             </div>
-                            <p><strong>Your EMBERs help us:</strong></p>
-                            <ul class="description">
-                                <li>🚀 Accelerate AI development</li>
-                                <li>🔧 Build more life-integrated features</li>
-                                <li>🌍 Reach new users worldwide</li>
-                                <li>💡 Create the future of daily finance</li>
-                            </ul>
+                        </div>
+
+                        <div class="column">
+                            <div class="qr-container">
+                                <p class="qr-label">🪙 Token Address (EMBER)</p>
+                                <a href="bitcoincash:zpq8yv3w69474fjmcr2cw7qt729rklx0mu9tej7c6p" title="Send EMBER Tokens">
+                                    <img src="./assets/images/qrcode-zpq8yv3w69474fjmcr2cw7qt729rklx0mu9tej7c6p.png" alt="Send EMBERs - Token Address" class="qr-token">
+                                </a>
+                            </div>
                         </div>
                     </div>
+
+                    <div class="address-buttons">
+                        <div class="button-column">
+                            <a href="https://explorer.salemkode.com/address/bitcoincash:qpq8yv3w69474fjmcr2cw7qt729rklx0muzp2vs79j"
+                               target="_blank"
+                               class="explorer-button">
+                                <svg class="fa-external-link" style="width: 16px; height: 16px;">
+                                    <use xlink:href="#fa-external-link"></use>
+                                </svg>
+                                View Cash Address
+                            </a>
+                        </div>
+                        <div class="button-column">
+                            <a href="https://explorer.salemkode.com/address/bitcoincash:zpq8yv3w69474fjmcr2cw7qt729rklx0mu9tej7c6p"
+                               target="_blank"
+                               class="explorer-button">
+                                <svg class="fa-external-link" style="width: 16px; height: 16px;">
+                                    <use xlink:href="#fa-external-link"></use>
+                                </svg>
+                                View Token Address
+                            </a>
+                        </div>
+                    </div>
+
+                    <p style="margin-top: 0.5rem; font-size: 0.9em;"><em>✨ Click buttons to view addresses in explorer</em></p>
                 </div>
             </div>
         </section>
@@ -319,7 +423,7 @@
                     </div>
                     <div class="column">
                         <figure>
-                            <img src="./assets/images/demo-screenshot.png" alt="Personas Live Demo">
+                            <img src="./assets/images/demo-screenshot.png" alt="Personas Live Demo" class="rounded-image">
                         </figure>
                     </div>
                 </div>
@@ -337,7 +441,7 @@
                     </a>
                 </p>
                 <p>
-                    <a href="https://github.com/shomariimani/personas" class="button ghost" title="GitHub Repository" target="_blank">
+                    <a href="https://github.com/nyusternie/personas" class="button ghost" title="GitHub Repository" target="_blank">
                         <svg class="fa-github">
                             <use xlink:href="#fa-github"></use>
                         </svg>
