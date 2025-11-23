@@ -226,15 +226,15 @@
                             Join the future of personal finance with AI-powered assistance.
                         </p>
                         <div class="mt-10 flex items-center justify-center gap-x-6">
+                            <a href="#features" class="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-purple-600 shadow-sm hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
+                                Explore Features
+                            </a>
                             <button
                                 @click="connectWallet"
-                                class="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-purple-600 shadow-sm hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                                class="text-sm font-semibold leading-6 text-white border border-white/50 px-4 py-2.5 rounded-md hover:bg-white/10 transition-colors duration-200"
                             >
-                                Connect Your Wallet
+                                Connect Wallet <span aria-hidden="true">→</span>
                             </button>
-                            <a href="https://github.com/nyusternie" target="_blank" class="text-sm font-semibold leading-6 text-white">
-                                Learn More <span aria-hidden="true">→</span>
-                            </a>
                         </div>
                     </div>
                 </div>

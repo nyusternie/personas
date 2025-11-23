@@ -16,6 +16,9 @@
     const Wallet = useWalletStore()
     const System = useSystemStore()
 
+    /* State for WalletConnect modal */
+    const showWalletConnect = ref(false)
+
     /* Navigation items */
     const navigation = [
         { name: 'Features', href: '#features' },
@@ -34,8 +37,12 @@
         emit('toggleMobileMenu')
     }
 
-    const connectWallet = async () => {
-        await Wallet.connect()
+    const openWalletConnect = () => {
+        showWalletConnect.value = true
+    }
+
+    const closeWalletConnect = () => {
+        showWalletConnect.value = false
     }
 </script>
 
@@ -81,7 +88,7 @@
                 <!-- Wallet Connection -->
                 <button
                     v-if="!Wallet.isConnected"
-                    @click="connectWallet"
+                    @click="openWalletConnect"
                     class="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-6 py-2 rounded-full text-sm font-semibold transition-all duration-200 transform hover:scale-105"
                 >
                     Connect Wallet
@@ -166,7 +173,7 @@
                         <div class="py-6">
                             <div v-if="!Wallet.isConnected" class="space-y-4">
                                 <button
-                                    @click="connectWallet"
+                                    @click="openWalletConnect"
                                     class="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-4 py-3 rounded-lg text-base font-semibold transition-all duration-200"
                                 >
                                     Connect Wallet
@@ -204,5 +211,11 @@
                 </div>
             </div>
         </div>
+
+        <!-- Wallet Connect Modal -->
+        <WalletConnectModal
+            v-if="showWalletConnect"
+            @close="closeWalletConnect"
+        />
     </header>
 </template>

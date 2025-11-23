@@ -6,6 +6,11 @@
     const System = useSystemStore()
     const Profile = useProfileStore()
 
+    /* Define emits */
+    const emit = defineEmits<{
+        close: []
+    }>()
+
     /* Modal state */
     const isOpen = ref(true)
     const isLoading = ref(false)
@@ -77,7 +82,7 @@
             }
 
             // Close modal on successful connection
-            isOpen.value = false
+            closeModal()
 
             System.showNotification({
                 title: 'Wallet Connected',
@@ -146,6 +151,7 @@
 
     const closeModal = () => {
         isOpen.value = false
+        emit('close')
     }
 
     const toggleAutoConnect = () => {

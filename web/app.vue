@@ -159,9 +159,6 @@ watch(() => Profile.session, (newSession, oldSession) => {
         </NuxtLayout>
 
         <!-- Global components that should be outside the layout -->
-        <WalletConnectModal
-            v-if="!Wallet.isConnected && !Wallet.isConnecting && !isInitializing"
-        />
         <AIAssistantWidget v-if="!isInitializing" />
     </div>
 </template>
