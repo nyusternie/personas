@@ -10,10 +10,10 @@
                         </svg>
                     </div>
                     <h1 class="mt-6 text-3xl font-bold text-gray-900 dark:text-white">
-                        Personas Wallet
+                        Personas Cash
                     </h1>
                     <p class="mt-2 text-gray-600 dark:text-gray-400">
-                        Your Bitcoin Cash wallet, reimagined
+                        Bitcoin Cash for tomorrow, Today!
                     </p>
                 </div>
 
@@ -23,7 +23,7 @@
                         <svg class="w-6 h-6 text-primary-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                         </svg>
-                        <span class="text-5xl text-gray-700 dark:text-gray-300">Passkey Authentication</span>
+                        <span class="text-gray-700 dark:text-gray-300">Passkey Authentication</span>
                     </div>
 
                     <div class="flex items-center p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
@@ -45,14 +45,14 @@
                 <div class="space-y-4">
                     <button
                         @click="createWallet"
-                        class="btn-primary w-full py-3 px-6 text-lg"
+                        class="btn-primary"
                     >
                         Create New Wallet
                     </button>
 
                     <button
                         @click="restoreWallet"
-                        class="btn-secondary w-full py-3 px-6 text-lg"
+                        class="btn-secondary"
                     >
                         Restore Wallet
                     </button>

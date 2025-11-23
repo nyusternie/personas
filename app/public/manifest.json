@@ -1,7 +1,7 @@
 {
-    "name": "Personas Wallet",
+    "name": "Personas Cash",
     "short_name": "Personas",
-    "description": "Your Bitcoin Cash wallet reimagined with passkeys and social recovery",
+    "description": "Bitcoin Cash for tomorrow, Today!",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#ffffff",

@@ -2,7 +2,6 @@ let libauthInstance: any = null
 
 export async function getLibauth() {
     if (!libauthInstance) {
-        // Dynamically import to avoid top-level await in build
         const { secp256k1, sha256, sha512, ripemd160 } = await import('@bitauth/libauth')
         libauthInstance = { secp256k1, sha256, sha512, ripemd160 }
     }

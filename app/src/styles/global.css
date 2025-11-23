@@ -24,3 +24,29 @@
 
   --font-sans: "Inter", system-ui, sans-serif;
 }
+
+/* Base styles */
+html {
+  font-family: var(--font-sans);
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom components */
+.btn-primary {
+  @apply bg-primary-500 hover:bg-primary-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 w-full text-lg;
+}
+
+.btn-secondary {
+  @apply border-2 border-primary-500 text-primary-500 hover:bg-primary-50 dark:hover:bg-gray-800 font-semibold py-3 px-6 rounded-lg transition-colors duration-200 w-full text-lg;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+  }
+}

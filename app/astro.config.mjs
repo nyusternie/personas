@@ -1,10 +1,10 @@
 // @ts-check
-import { defineConfig } from "astro/config";
-import vue from "@astrojs/vue";
-import tailwindcss from "@tailwindcss/vite";
+import { defineConfig } from "astro/config"
+import vue from "@astrojs/vue"
+import tailwindcss from "@tailwindcss/vite"
 
 export default defineConfig({
-  site: "https://personas-wallet.pages.dev",
+  site: "https://app.personas.cash",
   integrations: [vue()],
   vite: {
     plugins: [tailwindcss()],
@@ -19,4 +19,4 @@ export default defineConfig({
       noExternal: ["@bitauth/libauth"]
     }
   }
-});
+})
