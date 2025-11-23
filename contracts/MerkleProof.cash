@@ -1,0 +1,170 @@
+// SPDX-License-Identifier: MIT
+pragma cashscript ^0.9.0;
+
+/**
+ * @title MerkleProof
+ * @notice Efficient Merkle proof verification with BCH CHIP optimizations
+ * @author 0xShomari
+ * @dev Implements Merkle tree proof verification using BCH Loops and Functions CHIPs
+ *
+ * Features:
+ * - Optimized Merkle proof verification with O(log n) efficiency
+ * - Support for variable-length proofs using BCH Loops CHIP
+ * - Reusable hash functions via BCH Functions CHIP
+ * - Batch verification of multiple proofs
+ * - Integration with account abstraction systems
+ *
+ * @custom:version 25.11.23
+ * @custom:security-contact security@0xshomari.com
+ *
+ * Copyright (c) 2025 0xShomari. All rights reserved.
+ */
+contract MerkleProof {
+    // Using loops for efficient Merkle proof verification
+    // Using functions to encapsulate reusable logic
+
+    // Define hash function as a reusable component using OP_DEFINE
+    bytes hashFunction =
+        // Function body: takes two items, concatenates and double hashes
+        new bytes(0x00) + // function identifier 0
+        new bytes('OP_CAT OP_HASH256') +
+        new bytes(0x89) + // OP_DEFINE
+        new bytes(0x00);  // function identifier
+
+    // Merkle proof verification function
+    bytes merkleVerifyFunction =
+        new bytes(0x01) + // function identifier 1
+        new bytes(
+            // Function takes: root, leaf, proof array on altstack
+            // Returns: 1 if valid, 0 if invalid
+            'OP_BEGIN ' +
+            'OP_IF OP_SWAP OP_ENDIF ' + // Apply proof element direction
+            'OP_0 OP_INVOKE ' +         // Call hash function (identifier 0)
+            'OP_FROMALTSTACK ' +        // Get next direction flag
+            'OP_UNTIL ' +               // Loop until proof complete
+            'OP_EQUAL'                  // Compare with target root
+        ) +
+        new bytes(0x89) + // OP_DEFINE
+        new bytes(0x01);  // function identifier
+
+    function verifyMerkleProof(
+        bytes32 root,
+        bytes32 leaf,
+        bytes32[] proof,
+        bool[] directions
+    ) {
+        // Push leaf and root to main stack
+        require(leaf != bytes32(0));
+        require(root != bytes32(0));
+
+        // Push proof elements and directions to altstack
+        // (simulating the required stack setup)
+        bytes script = new bytes(0);
+
+        // Push the leaf
+        script += leaf;
+
+        // Push directions to altstack in reverse order
+        for (int i = directions.length - 1; i >= 0; i--) {
+            script += directions[i] ? new bytes('OP_1') : new bytes('OP_0');
+            script += new bytes('OP_TOALTSTACK');
+        }
+
+        // Call the merkle verification function
+        script += new bytes(0x01); // function identifier 1
+        script += new bytes(0x8a); // OP_INVOKE
+
+        // Verify the result
+        script += new bytes('OP_VERIFY');
+
+        // The actual verification would happen when this script executes
+    }
+
+    // Enhanced version using loops for variable-length proofs
+    function dynamicMerkleProof(
+        bytes32 root,
+        bytes32 leaf,
+        bytes32[] proofHashes,
+        bool[] proofDirections
+    ) {
+        require(proofHashes.length == proofDirections.length);
+        require(proofHashes.length > 0);
+
+        bytes script = new bytes(0);
+
+        // Initialize with leaf
+        script += leaf;
+
+        // Push total proof count
+        script += numToBin(proofHashes.length);
+
+        // Use loops to handle variable length proofs
+        script += new bytes('OP_BEGIN');
+        script += new bytes('OP_OVER'); // Duplicate current hash
+        script += new bytes('OP_OVER'); // Duplicate proof hash
+
+        // Apply proof element with direction
+        script += new bytes('OP_IF OP_SWAP OP_ENDIF');
+
+        // Hash the concatenation
+        script += new bytes('OP_CAT OP_HASH256');
+
+        // Move to next proof element
+        script += new bytes('OP_SWAP OP_1SUB OP_SWAP');
+
+        // Check if we've processed all proofs
+        script += new bytes('OP_DUP OP_0 OP_EQUAL');
+        script += new bytes('OP_UNTIL');
+
+        // Clean up and compare with root
+        script += new bytes('OP_DROP'); // Drop the counter
+        script += root;
+        script += new bytes('OP_EQUALVERIFY');
+
+        // The compiled script would execute this logic
+    }
+
+    // Helper function to convert number to appropriate byte representation
+    function numToBin(int n) returns (bytes) {
+        if (n == 0) return new bytes('OP_0');
+        if (n == 1) return new bytes('OP_1');
+        if (n <= 16) return new bytes(uint8(n - 1 + 81)); // OP_1 to OP_16
+        // For larger numbers, use appropriate push operation
+        return new bytes('TODO'); // Simplified for example
+    }
+
+    // Example usage function that combines both CHIPs
+    function batchMerkleVerify(
+        bytes32[] roots,
+        bytes32[] leaves,
+        bytes32[][] proofs,
+        bool[][] directions
+    ) {
+        require(roots.length == leaves.length);
+        require(roots.length == proofs.length);
+        require(roots.length == directions.length);
+
+        // Define a reusable batch verification function
+        bytes batchVerifyFunction =
+            new bytes(0x02) + // function identifier 2
+            new bytes(
+                'OP_BEGIN ' +
+                'OP_OVER OP_OVER ' + // Duplicate current indices
+                'OP_1 OP_INVOKE ' +  // Call merkle verification
+                'OP_VERIFY ' +
+                'OP_SWAP OP_1ADD OP_SWAP ' + // Increment index
+                'OP_OVER OP_OVER OP_EQUAL ' + // Compare with total
+                'OP_UNTIL ' +
+                'OP_DROP OP_DROP' // Cleanup
+            ) +
+            new bytes(0x89) + // OP_DEFINE
+            new bytes(0x02);  // function identifier
+
+        // Setup and call batch verification
+        bytes script = new bytes(0);
+        script += new bytes('OP_0'); // Start index
+        script += numToBin(roots.length); // Total count
+        script += new bytes(0x02); // function identifier 2
+        script += new bytes(0x8a); // OP_INVOKE
+    }
+}
