@@ -6,6 +6,7 @@
 - **📚 DOCUMENTATION**: [docs.personas.cash](https://docs.personas.cash)
 - **💻 GITHUB**: [github.com/shomariimani/personas](https://github.com/shomariimani/personas)
 - **🐦 TWITTER**: [@0xShomari](https://twitter.com/0xShomari)
+- **🏆 DORAHACKS**: [View our BUIDL](https://dorahacks.io/buidl/32734)
 
 ## 🤖 Your AI-Powered Financial Companion
 
@@ -176,15 +177,6 @@ We believe in building the future together. Contributions are welcome! Please se
 - Feature requests and bug reports
 - Documentation improvements
 - Community support and testing
-
-## 📞 Connect With Us
-
-- **🌐 Website**: [personas.cash](https://personas.cash)
-- **📖 Documentation**: [docs.personas.cash](https://docs.personas.cash)
-- **🎬 Project Tour**: [tour.personas.cash](https://tour.personas.cash)
-- **💻 GitHub**: [github.com/shomariimani/personas](https://github.com/shomariimani/personas)
-- **🐦 Twitter**: [@0xShomari](https://twitter.com/0xShomari)
-- **🏆 DoraHacks**: [View our BUIDL](https://dorahacks.io/buidl/32734)
 
 ## 📄 License
 
