@@ -1,51 +1,5 @@
 <!-- components/Header.vue -->
 
-<script setup lang="ts">
-    /* Define properties. */
-    interface Props {
-        isMobileMenuOpen?: boolean
-    }
-
-    const props = defineProps<Props>()
-
-    const emit = defineEmits<{
-        toggleMobileMenu: []
-    }>()
-
-    /* Initialize stores */
-    const Wallet = useWalletStore()
-    const System = useSystemStore()
-
-    /* State for WalletConnect modal */
-    const showWalletConnect = ref(false)
-
-    /* Navigation items */
-    const navigation = [
-        { name: 'Features', href: '#features' },
-        { name: 'Use Cases', href: '#use-cases' },
-        { name: 'Technology', href: '#technology' },
-        { name: 'GitHub', href: 'https://github.com/nyusternie' },
-    ]
-
-    /* Social links */
-    const socialLinks = [
-        { name: 'GitHub', href: 'https://github.com/nyusternie' },
-        { name: 'Twitter', href: 'https://x.com/0xShomari' },
-    ]
-
-    const toggleMenu = () => {
-        emit('toggleMobileMenu')
-    }
-
-    const openWalletConnect = () => {
-        showWalletConnect.value = true
-    }
-
-    const closeWalletConnect = () => {
-        showWalletConnect.value = false
-    }
-</script>
-
 <template>
     <header class="absolute inset-x-0 top-0 z-50 bg-transparent">
         <nav class="flex items-center justify-between p-6 lg:px-8" aria-label="Global">
@@ -85,17 +39,16 @@
                     </a>
                 </div>
 
-                <!-- Wallet Connection -->
+                <!-- Launch App Button -->
                 <button
-                    v-if="!Wallet.isConnected"
-                    @click="openWalletConnect"
+                    @click="launchApp"
                     class="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-6 py-2 rounded-full text-sm font-semibold transition-all duration-200 transform hover:scale-105"
                 >
-                    Connect Wallet
+                    Launch App
                 </button>
 
                 <!-- Wallet Info -->
-                <div v-else class="flex items-center space-x-3">
+                <div v-if="Wallet.isConnected" class="flex items-center space-x-3">
                     <div class="bg-green-500/20 border border-green-400/30 rounded-full px-4 py-2">
                         <span class="text-green-300 text-sm font-medium">
                             {{ Wallet.truncatedAddress }}
@@ -169,28 +122,31 @@
                             </a>
                         </div>
 
-                        <!-- Wallet Section -->
+                        <!-- Actions Section -->
                         <div class="py-6">
-                            <div v-if="!Wallet.isConnected" class="space-y-4">
+                            <div class="space-y-4">
+                                <!-- Launch App Button -->
                                 <button
-                                    @click="openWalletConnect"
+                                    @click="launchApp"
                                     class="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-4 py-3 rounded-lg text-base font-semibold transition-all duration-200"
                                 >
-                                    Connect Wallet
+                                    Launch App
                                 </button>
-                            </div>
-                            <div v-else class="space-y-4">
-                                <div class="bg-green-500/20 border border-green-400/30 rounded-lg px-4 py-3">
-                                    <p class="text-green-300 text-sm font-medium text-center">
-                                        {{ Wallet.truncatedAddress }}
-                                    </p>
+
+                                <!-- Wallet Info (if connected) -->
+                                <div v-if="Wallet.isConnected" class="space-y-3">
+                                    <div class="bg-green-500/20 border border-green-400/30 rounded-lg px-4 py-3">
+                                        <p class="text-green-300 text-sm font-medium text-center">
+                                            {{ Wallet.truncatedAddress }}
+                                        </p>
+                                    </div>
+                                    <button
+                                        @click="Wallet.disconnect"
+                                        class="w-full text-gray-300 hover:text-white border border-gray-600 hover:border-gray-400 px-4 py-3 rounded-lg text-base font-semibold transition-all duration-200"
+                                    >
+                                        Disconnect
+                                    </button>
                                 </div>
-                                <button
-                                    @click="Wallet.disconnect"
-                                    class="w-full text-gray-300 hover:text-white border border-gray-600 hover:border-gray-400 px-4 py-3 rounded-lg text-base font-semibold transition-all duration-200"
-                                >
-                                    Disconnect
-                                </button>
                             </div>
 
                             <!-- Social Links Mobile -->
@@ -217,5 +173,162 @@
             v-if="showWalletConnect"
             @close="closeWalletConnect"
         />
+
+        <!-- Hackathon Modal -->
+        <div v-if="showHackathonModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div class="bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <!-- Modal Header -->
+                <div class="bg-green-600 text-white p-6 rounded-t-lg">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-2xl font-bold">💖 Fuel Our Mission</h2>
+                        <button
+                            @click="closeHackathonModal"
+                            class="text-white hover:text-gray-200 text-2xl"
+                        >
+                            &times;
+                        </button>
+                    </div>
+                    <p class="mt-2 text-green-100">Join the revolution! Send EMBERs to power the future of autonomous finance 🚀</p>
+                </div>
+
+                <!-- Modal Content -->
+                <div class="p-6">
+                    <p class="text-center text-gray-600 dark:text-gray-300 mb-6">
+                        📱 Scan to Fuel Innovation w/ BCH or EMBERs
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <!-- Cash Address QR -->
+                        <div class="text-center">
+                            <div class="bg-white p-4 rounded-lg shadow-md">
+                                <p class="font-semibold text-gray-700 mb-2">💵 Cash Address (BCH)</p>
+                                <a href="bitcoin:qpq8yv3w69474fjmcr2cw7qt729rklx0muzp2vs79j" title="Send BCH">
+                                    <img
+                                        src="https://i.ibb.co/DPqh49hT/qrcode-qpq8yv3w69474fjmcr2cw7qt729rklx0muzp2vs79j.png"
+                                        alt="Send EMBERs - Cash Address"
+                                        class="w-48 h-48 mx-auto border border-gray-200 rounded"
+                                    />
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Token Address QR -->
+                        <div class="text-center">
+                            <div class="bg-white p-4 rounded-lg shadow-md">
+                                <p class="font-semibold text-gray-700 mb-2">🪙 Token Address (EMBER)</p>
+                                <a href="bitcoincash:zpq8yv3w69474fjmcr2cw7qt729rklx0mu9tej7c6p" title="Send EMBER Tokens">
+                                    <img
+                                        src="https://i.ibb.co/DPqh49hT/qrcode-qpq8yv3w69474fjmcr2cw7qt729rklx0muzp2vs79j.png"
+                                        alt="Send EMBERs - Token Address"
+                                        class="w-48 h-48 mx-auto border border-gray-200 rounded"
+                                    />
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Address Buttons -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <a
+                                href="https://explorer.salemkode.com/address/bitcoincash:qpq8yv3w69474fjmcr2cw7qt729rklx0muzp2vs79j"
+                                target="_blank"
+                                class="w-full bg-primary-500 hover:bg-primary-600 text-white font-semibold py-2 px-4 rounded transition-colors duration-200 flex items-center justify-center gap-2"
+                            >
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg>
+                                View Cash Address
+                            </a>
+                        </div>
+                        <div>
+                            <a
+                                href="https://explorer.salemkode.com/address/bitcoincash:zpq8yv3w69474fjmcr2cw7qt729rklx0mu9tej7c6p"
+                                target="_blank"
+                                class="w-full bg-primary-500 hover:bg-primary-600 text-white font-semibold py-2 px-4 rounded transition-colors duration-200 flex items-center justify-center gap-2"
+                            >
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg>
+                                View Token Address
+                            </a>
+                        </div>
+                    </div>
+
+                    <p class="text-center text-sm text-gray-500 dark:text-gray-400">
+                        ✨ Click buttons to view addresses in explorer
+                    </p>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 rounded-b-lg">
+                    <div class="flex justify-end">
+                        <button
+                            @click="closeHackathonModal"
+                            class="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-6 rounded transition-colors duration-200"
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </header>
 </template>
+
+<script setup lang="ts">
+    /* Define properties. */
+    interface Props {
+        isMobileMenuOpen?: boolean
+    }
+
+    const props = defineProps<Props>()
+
+    const emit = defineEmits<{
+        toggleMobileMenu: []
+    }>()
+
+    /* Initialize stores */
+    const Wallet = useWalletStore()
+    const System = useSystemStore()
+
+    /* State for WalletConnect modal */
+    const showWalletConnect = ref(false)
+
+    /* State for Hackathon modal */
+    const showHackathonModal = ref(false)
+
+    /* Navigation items */
+    const navigation = [
+        { name: 'Features', href: '#features' },
+        { name: 'Use Cases', href: '#use-cases' },
+        { name: 'Technology', href: '#technology' },
+        { name: 'GitHub', href: 'https://github.com/nyusternie' },
+    ]
+
+    /* Social links */
+    const socialLinks = [
+        { name: 'GitHub', href: 'https://github.com/nyusternie' },
+        { name: 'Twitter', href: 'https://x.com/0xShomari' },
+    ]
+
+    const toggleMenu = () => {
+        emit('toggleMobileMenu')
+    }
+
+    const openWalletConnect = () => {
+        showWalletConnect.value = true
+    }
+
+    const closeWalletConnect = () => {
+        showWalletConnect.value = false
+    }
+
+    const launchApp = () => {
+        showHackathonModal.value = true
+    }
+
+    const closeHackathonModal = () => {
+        showHackathonModal.value = false
+    }
+</script>
