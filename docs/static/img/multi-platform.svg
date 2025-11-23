@@ -1,0 +1,11 @@
+<!-- Example Multi-Platform Access SVG -->
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="50" y="70" width="60" height="90" rx="10" fill="#EF4444" opacity="0.1" stroke="#EF4444" stroke-width="3"/>
+  <circle cx="80" cy="85" r="5" fill="#EF4444"/>
+  <rect x="65" y="100" width="30" height="40" rx="5" fill="#EF4444" opacity="0.3"/>
+
+  <rect x="100" y="80" width="70" height="50" rx="5" fill="#EF4444" opacity="0.1" stroke="#EF4444" stroke-width="3"/>
+  <rect x="110" y="90" width="50" height="30" rx="3" fill="#EF4444" opacity="0.3"/>
+
+  <path d="M90 60 L110 60" stroke="#EF4444" stroke-width="3"/>
+</svg>

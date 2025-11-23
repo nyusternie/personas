@@ -1,0 +1,7 @@
+<!-- Example Gasless Transactions SVG -->
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="100" cy="100" r="80" fill="#F59E0B" opacity="0.1"/>
+  <path d="M70 120 L100 80 L130 120 L115 120 L115 140 L85 140 L85 120 Z" fill="#F59E0B"/>
+  <path d="M95 100 L105 100" stroke="#F59E0B" stroke-width="3"/>
+  <path d="M95 110 L105 110" stroke="#F59E0B" stroke-width="3"/>
+</svg>

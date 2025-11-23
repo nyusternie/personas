@@ -2,46 +2,28 @@
 sidebar_position: 1
 ---
 
-# Tutorial Intro
+# Introduction
 
-Let's discover **Docusaurus in less than 5 minutes**.
+Welcome to Personas!
 
-## Getting Started
+**Personal Finance AI Assistants** — designed to grow and adapt to your busy digital lifestyle.
 
-Get started by **creating a new site**.
+## What is Personas?
 
-Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new)**.
+Personas are revolutionizing how users interact with Bitcoin Cash by solving its biggest challenges: **complexity and security**. Personas make Web3 intuitive, seamless, and safe for everyone — paving the way for true mass adoption.
 
-### What you'll need
+By replacing technical barriers like **seed phrases with social recovery** and allowing **token transfers free of sats**; Personas make interacting with decentralized finance, NFTs, and dApps as easy as sending a text message.
 
-- [Node.js](https://nodejs.org/en/download/) version 18.0 or above:
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
+## Key Benefits
 
-## Generate a new site
+- **🤖 AI-Powered**: Natural language commands for all operations
+- **🔐 Secure**: Passkey authentication replacing vulnerable seed phrases
+- **⛽ Gasless**: No need for native BCH for token transactions
+- **🌐 Universal**: Compatible with any Bitcoin Cash dApp
+- **📱 Multi-Platform**: Web app and Telegram Mini App support
 
-Generate a new Docusaurus site using the **classic template**.
+## Real-World Impact
 
-The classic template will automatically be added to your project after you run the command:
+Personas offers real-world use-cases specifically designed to drive mass adoption from "normies" that resist crypto at every turn.
 
-```bash
-npm init docusaurus@latest my-website classic
-```
-
-You can type this command into Command Prompt, Powershell, Terminal, or any other integrated terminal of your code editor.
-
-The command also installs all necessary dependencies you need to run Docusaurus.
-
-## Start your site
-
-Run the development server:
-
-```bash
-cd my-website
-npm run start
-```
-
-The `cd` command changes the directory you're working with. In order to work with your newly created Docusaurus site, you'll need to navigate the terminal there.
-
-The `npm run start` command builds your website locally and serves it through a development server, ready for you to view at http://localhost:3000/.
-
-Open `docs/intro.md` (this page) and edit some lines: the site **reloads automatically** and displays your changes.
+Ready to get started? Check out our [features overview](./features.md) or jump right into [getting started](./getting-started.md).

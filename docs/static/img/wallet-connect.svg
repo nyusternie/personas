@@ -1,0 +1,10 @@
+<!-- Example Universal Compatibility SVG -->
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="80" cy="100" r="25" fill="#8B5CF6" opacity="0.1" stroke="#8B5CF6" stroke-width="3"/>
+  <circle cx="120" cy="100" r="25" fill="#8B5CF6" opacity="0.1" stroke="#8B5CF6" stroke-width="3"/>
+  <path d="M80 100 L120 100" stroke="#8B5CF6" stroke-width="3"/>
+  <circle cx="80" cy="100" r="8" fill="#8B5CF6"/>
+  <circle cx="120" cy="100" r="8" fill="#8B5CF6"/>
+  <path d="M65 85 Q80 70 95 85" stroke="#8B5CF6" stroke-width="2" fill="none"/>
+  <path d="M105 85 Q120 70 135 85" stroke="#8B5CF6" stroke-width="2" fill="none"/>
+</svg>
