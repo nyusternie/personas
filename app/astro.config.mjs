@@ -8,5 +8,15 @@ export default defineConfig({
   integrations: [vue()],
   vite: {
     plugins: [tailwindcss()],
-  },
+    build: {
+      target: "es2022"
+    },
+    optimizeDeps: {
+      include: ["cashscript"],
+      exclude: ["@bitauth/libauth"]
+    },
+    ssr: {
+      noExternal: ["@bitauth/libauth"]
+    }
+  }
 });
