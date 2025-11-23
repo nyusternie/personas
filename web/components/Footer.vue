@@ -5,7 +5,7 @@
     const socialLinks = [
         {
             name: 'GitHub',
-            href: 'https://github.com/nyusternie',
+            href: 'https://github.com/nyusternie/personas',
             description: 'View our code and contribute'
         },
         {
@@ -25,7 +25,7 @@
         ],
         developers: [
             { name: 'Documentation', href: '#docs' },
-            { name: 'GitHub', href: 'https://github.com/nyusternie' },
+            { name: 'GitHub', href: 'https://github.com/nyusternie/personas' },
             { name: 'WalletConnect', href: '#walletconnect' },
             { name: 'API Reference', href: '#api' },
         ],

@@ -1,5 +1,3 @@
-<!-- components/Header.vue -->
-
 <template>
     <header class="absolute inset-x-0 top-0 z-50 bg-transparent">
         <nav class="flex items-center justify-between p-6 lg:px-8" aria-label="Global">
@@ -46,21 +44,6 @@
                 >
                     Launch App
                 </button>
-
-                <!-- Wallet Info -->
-                <div v-if="Wallet.isConnected" class="flex items-center space-x-3">
-                    <div class="bg-green-500/20 border border-green-400/30 rounded-full px-4 py-2">
-                        <span class="text-green-300 text-sm font-medium">
-                            {{ Wallet.truncatedAddress }}
-                        </span>
-                    </div>
-                    <button
-                        @click="Wallet.disconnect"
-                        class="text-gray-300 hover:text-white text-sm font-medium"
-                    >
-                        Disconnect
-                    </button>
-                </div>
             </div>
 
             <!-- Mobile Menu Button -->
@@ -74,7 +57,7 @@
                     <!-- Simple menu icon -->
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path v-if="!isMobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18-6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
@@ -102,7 +85,7 @@
                     >
                         <span class="sr-only">Close menu</span>
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18-6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
@@ -132,21 +115,6 @@
                                 >
                                     Launch App
                                 </button>
-
-                                <!-- Wallet Info (if connected) -->
-                                <div v-if="Wallet.isConnected" class="space-y-3">
-                                    <div class="bg-green-500/20 border border-green-400/30 rounded-lg px-4 py-3">
-                                        <p class="text-green-300 text-sm font-medium text-center">
-                                            {{ Wallet.truncatedAddress }}
-                                        </p>
-                                    </div>
-                                    <button
-                                        @click="Wallet.disconnect"
-                                        class="w-full text-gray-300 hover:text-white border border-gray-600 hover:border-gray-400 px-4 py-3 rounded-lg text-base font-semibold transition-all duration-200"
-                                    >
-                                        Disconnect
-                                    </button>
-                                </div>
                             </div>
 
                             <!-- Social Links Mobile -->
@@ -168,15 +136,9 @@
             </div>
         </div>
 
-        <!-- Wallet Connect Modal -->
-        <WalletConnectModal
-            v-if="showWalletConnect"
-            @close="closeWalletConnect"
-        />
-
         <!-- Hackathon Modal -->
         <div v-if="showHackathonModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div class="bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="bg-white dark:bg-gray-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
                 <!-- Modal Header -->
                 <div class="bg-green-600 text-white p-6 rounded-t-lg">
                     <div class="flex justify-between items-center">
@@ -227,32 +189,28 @@
                         </div>
                     </div>
 
-                    <!-- Address Buttons -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <a
-                                href="https://explorer.salemkode.com/address/bitcoincash:qpq8yv3w69474fjmcr2cw7qt729rklx0muzp2vs79j"
-                                target="_blank"
-                                class="w-full bg-primary-500 hover:bg-primary-600 text-white font-semibold py-2 px-4 rounded transition-colors duration-200 flex items-center justify-center gap-2"
-                            >
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                </svg>
-                                View Cash Address
-                            </a>
-                        </div>
-                        <div>
-                            <a
-                                href="https://explorer.salemkode.com/address/bitcoincash:zpq8yv3w69474fjmcr2cw7qt729rklx0mu9tej7c6p"
-                                target="_blank"
-                                class="w-full bg-primary-500 hover:bg-primary-600 text-white font-semibold py-2 px-4 rounded transition-colors duration-200 flex items-center justify-center gap-2"
-                            >
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                </svg>
-                                View Token Address
-                            </a>
-                        </div>
+                    <!-- Address Exploration Buttons -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <a
+                            href="https://explorer.salemkode.com/address/bitcoincash:qpq8yv3w69474fjmcr2cw7qt729rklx0muzp2vs79j"
+                            target="_blank"
+                            class="w-full bg-primary-500 hover:bg-primary-600 text-white font-semibold py-2 px-4 rounded transition-colors duration-200 flex items-center justify-center gap-2"
+                        >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                            View Cash Address
+                        </a>
+                        <a
+                            href="https://explorer.salemkode.com/address/bitcoincash:zpq8yv3w69474fjmcr2cw7qt729rklx0mu9tej7c6p"
+                            target="_blank"
+                            class="w-full bg-primary-500 hover:bg-primary-600 text-white font-semibold py-2 px-4 rounded transition-colors duration-200 flex items-center justify-center gap-2"
+                        >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                            View Token Address
+                        </a>
                     </div>
 
                     <p class="text-center text-sm text-gray-500 dark:text-gray-400">
@@ -260,14 +218,104 @@
                     </p>
                 </div>
 
-                <!-- Modal Footer -->
+                <!-- Modal Footer with Action Buttons -->
                 <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 rounded-b-lg">
-                    <div class="flex justify-end">
+                    <div class="flex flex-col sm:flex-row gap-3 justify-between items-center">
+                        <!-- Action Buttons Left Side -->
+                        <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                            <!-- Left: Continue to App -->
+                            <button
+                                @click="continueToApp"
+                                class="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold py-2 px-4 rounded transition-colors duration-200 flex items-center justify-center gap-2 flex-1"
+                            >
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                </svg>
+                                Continue to App
+                            </button>
+                        </div>
+
+                        <!-- Action Buttons Center -->
+                        <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                            <!-- Center: Take a Tour -->
+                            <button
+                                @click="takeTour"
+                                class="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold py-2 px-4 rounded transition-colors duration-200 flex items-center justify-center gap-2 flex-1"
+                            >
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                </svg>
+                                Take a Tour
+                            </button>
+                        </div>
+
+                        <!-- Action Buttons Right Side -->
+                        <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                            <!-- Right: View our BUIDL -->
+                            <button
+                                @click="viewBuidl"
+                                class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold py-2 px-4 rounded transition-colors duration-200 flex items-center justify-center gap-2 flex-1"
+                            >
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg>
+                                View our BUIDL
+                            </button>
+                        </div>
+
+                        <!-- Close Button -->
                         <button
                             @click="closeHackathonModal"
-                            class="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-6 rounded transition-colors duration-200"
+                            class="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-6 rounded transition-colors duration-200 w-full sm:w-auto"
                         >
                             Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Coming Soon Modal -->
+        <div v-if="showComingSoonModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div class="bg-white dark:bg-gray-800 rounded-lg max-w-md w-full">
+                <!-- Modal Header -->
+                <div class="bg-yellow-500 text-white p-6 rounded-t-lg">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-2xl font-bold">🚧 Under Construction</h2>
+                        <button
+                            @click="closeComingSoonModal"
+                            class="text-white hover:text-gray-200 text-2xl"
+                        >
+                            &times;
+                        </button>
+                    </div>
+                    <p class="mt-2 text-yellow-100">We're building something amazing!</p>
+                </div>
+
+                <!-- Modal Content -->
+                <div class="p-6 text-center">
+                    <div class="w-24 h-24 mx-auto mb-4 bg-yellow-100 rounded-full flex items-center justify-center">
+                        <svg class="w-12 h-12 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Personas Cash is Coming Soon!</h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-6">
+                        We're working hard to bring you the next generation Bitcoin Cash wallet experience.
+                        Stay tuned for updates!
+                    </p>
+                    <div class="space-y-3">
+                        <button
+                            @click="closeComingSoonModal"
+                            class="w-full bg-primary-500 hover:bg-primary-600 text-white font-semibold py-3 px-6 rounded transition-colors duration-200"
+                        >
+                            Got it!
+                        </button>
+                        <button
+                            @click="viewBuidl"
+                            class="w-full border-2 border-primary-500 text-primary-500 hover:bg-primary-50 dark:hover:bg-gray-700 font-semibold py-3 px-6 rounded transition-colors duration-200"
+                        >
+                            Check our Progress
                         </button>
                     </div>
                 </div>
@@ -288,40 +336,28 @@
         toggleMobileMenu: []
     }>()
 
-    /* Initialize stores */
-    const Wallet = useWalletStore()
-    const System = useSystemStore()
-
-    /* State for WalletConnect modal */
-    const showWalletConnect = ref(false)
-
     /* State for Hackathon modal */
     const showHackathonModal = ref(false)
+
+    /* State for Coming Soon modal */
+    const showComingSoonModal = ref(false)
 
     /* Navigation items */
     const navigation = [
         { name: 'Features', href: '#features' },
         { name: 'Use Cases', href: '#use-cases' },
         { name: 'Technology', href: '#technology' },
-        { name: 'GitHub', href: 'https://github.com/nyusternie' },
+        { name: 'GitHub', href: 'https://github.com/nyusternie/personas' },
     ]
 
     /* Social links */
     const socialLinks = [
-        { name: 'GitHub', href: 'https://github.com/nyusternie' },
+        { name: 'GitHub', href: 'https://github.com/nyusternie/personas' },
         { name: 'Twitter', href: 'https://x.com/0xShomari' },
     ]
 
     const toggleMenu = () => {
         emit('toggleMobileMenu')
-    }
-
-    const openWalletConnect = () => {
-        showWalletConnect.value = true
-    }
-
-    const closeWalletConnect = () => {
-        showWalletConnect.value = false
     }
 
     const launchApp = () => {
@@ -330,5 +366,22 @@
 
     const closeHackathonModal = () => {
         showHackathonModal.value = false
+    }
+
+    const continueToApp = () => {
+        showHackathonModal.value = false
+        showComingSoonModal.value = true
+    }
+
+    const closeComingSoonModal = () => {
+        showComingSoonModal.value = false
+    }
+
+    const takeTour = () => {
+        window.open('https://tour.personas.cash', '_blank')
+    }
+
+    const viewBuidl = () => {
+        window.open('https://dorahacks.io/buidl/32734', '_blank')
     }
 </script>

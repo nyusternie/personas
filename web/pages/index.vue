@@ -21,7 +21,7 @@
                                 <a href="#features" class="rounded-md bg-purple-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-purple-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-600">
                                     Explore Features
                                 </a>
-                                <a href="https://github.com/nyusternie" target="_blank" class="text-sm font-semibold leading-6 text-white">
+                                <a href="https://github.com/nyusternie/personas" target="_blank" class="text-sm font-semibold leading-6 text-white">
                                     View on GitHub <span aria-hidden="true">→</span>
                                 </a>
                             </div>

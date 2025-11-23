@@ -137,19 +137,19 @@ watch(() => System.error, (error) => {
     }
 })
 
-// Watch for session changes
-watch(() => Profile.session, (newSession, oldSession) => {
-    if (newSession !== oldSession) {
-        console.log('Session updated:', newSession)
-        if (newSession && Profile.isAuthenticated) {
-            System.showNotification({
-                title: 'Session Active',
-                description: 'Your session has been initialized',
-                icon: '✅'
-            })
-        }
-    }
-})
+// // Watch for session changes
+// watch(() => Profile.session, (newSession, oldSession) => {
+//     if (newSession !== oldSession) {
+//         console.log('Session updated:', newSession)
+//         if (newSession && Profile.isAuthenticated) {
+//             System.showNotification({
+//                 title: 'Session Active',
+//                 description: 'Your session has been initialized',
+//                 icon: '✅'
+//             })
+//         }
+//     }
+// })
 </script>
 
 <template>
