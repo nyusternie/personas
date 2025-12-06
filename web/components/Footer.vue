@@ -145,20 +145,31 @@
             <!-- Bottom Section -->
             <div class="mt-8 border-t border-gray-800 pt-8 sm:mt-12 lg:mt-16">
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between">
-                    <p class="text-sm leading-5 text-gray-400">
-                        &copy; 2024 Personas. Built for the Bitcoin Cash ecosystem.
-                    </p>
-                    <div class="mt-4 md:mt-0">
+                    <div>
+                        <p class="text-sm leading-5 text-gray-400">
+                            &copy; 2025 Personas DAO. All rights reserved.
+                            <br />
+                        </p>
+
                         <p class="text-xs leading-5 text-gray-500">
-                            Powered by
+                            Created with ❤️ by
                             <a
-                                href="https://modenero.com"
+                                href="https://hos.im"
                                 target="_blank"
                                 class="text-purple-400 hover:text-purple-300 transition-colors duration-200"
                             >
-                                Modenero DAO
+                                House of Shomari
                             </a>
-                            . All rights reserved.
+                        </p>
+                    </div>
+
+                    <div class="mt-4 md:mt-0">
+                        <p class="text-sm leading-5 text-gray-400">
+                            Built for the <a href="https://bitcoincash.org" target="_blank" class="text-purple-400 hover:text-purple-300 transition-colors duration-200">
+                                Bitcoin Cash
+                            </a> and <a href="https://nexa.org" target="_blank" class="text-purple-400 hover:text-purple-300 transition-colors duration-200">
+                                Nexa
+                            </a> ecosystems.
                         </p>
                     </div>
                 </div>
